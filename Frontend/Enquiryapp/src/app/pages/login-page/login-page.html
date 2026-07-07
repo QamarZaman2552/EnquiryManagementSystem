@@ -1,0 +1,63 @@
+<div class="login-page-container">
+  <!-- Background shapes -->
+  <div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+  </div>
+
+  <div class="login-wrapper">
+    <div class="glass-card">
+
+      <!-- Brand -->
+      <div class="brand-icon">
+        <i class="bi bi-shield-lock-fill"></i>
+      </div>
+      <h1 class="login-title">Admin Login</h1>
+      <p class="login-subtitle">Sign in to access the management panel</p>
+
+      <!-- Error Alert -->
+      <div class="alert-error" *ngIf="loginError">
+        <i class="bi bi-exclamation-circle me-2"></i>Invalid username or password. Please try again.
+      </div>
+
+      <!-- Login Form -->
+      <form #loginForm="ngForm" (ngSubmit)="loginForm.form.valid && onSubmit()" novalidate>
+        <div class="mb-3">
+          <label for="adminUsername" class="form-label">Username / Email</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input type="text" class="form-control" id="adminUsername" name="username" placeholder="Enter admin username" required
+              [(ngModel)]="username" #usernameInput="ngModel"
+              [class.is-invalid]="loginForm.submitted && usernameInput.invalid" />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="adminPassword" class="form-label">Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control" id="adminPassword" name="password" placeholder="Enter your password" required
+              [(ngModel)]="password" #passwordInput="ngModel"
+              [class.is-invalid]="loginForm.submitted && passwordInput.invalid" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-login" id="loginBtn">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+      </form>
+
+      <div class="divider">or</div>
+
+      <div class="back-link">
+        <a href="/enquiry"><i class="bi bi-arrow-left me-1"></i>Back to Customer Portal</a>
+      </div>
+
+    </div>
+
+    <!-- Footer note -->
+    <p class="text-center mt-3" style="color:rgba(255,255,255,0.25); font-size:0.75rem;">
+      &copy; 2025 Enquiry Management System. All rights reserved.
+    </p>
+  </div>
+</div>

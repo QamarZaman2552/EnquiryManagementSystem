@@ -1,0 +1,177 @@
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-name"><i class="bi bi-headset me-2"></i>Enquiry<span>Pro</span></div>
+    <div class="sidebar-subtitle">Admin Management Panel</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="/admin/dashboard" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+
+    <div class="nav-section-label mt-2">Management</div>
+    <a href="/admin/enquiries" class="sidebar-link active"><i class="bi bi-inbox"></i> All Enquiries</a>
+    <a href="/admin/services" class="sidebar-link"><i class="bi bi-grid-1x2"></i> Services</a>
+
+    <div class="nav-section-label mt-2">System</div>
+    <a href="javascript:void(0)" (click)="logout()" class="sidebar-link"><i class="bi bi-box-arrow-left"></i> Logout</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="admin-badge">
+      <div class="admin-avatar">A</div>
+      <div>
+        <div class="admin-name">Admin User</div>
+        <div class="admin-role">System Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<div class="main-content">
+
+  <!-- Top Header -->
+  <div class="top-header">
+    <div>
+      <div class="page-heading"><i class="bi bi-inbox me-2 text-primary"></i>All Enquiries</div>
+      <div class="breadcrumb-custom">Admin &rsaquo; Enquiries</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#3b82f6,#06b6d4);">
+            <i class="bi bi-inbox-fill"></i>
+          </div>
+          <div>
+            <div class="stat-value">{{ enquiresList.length }}</div>
+            <div class="stat-label">Total Enquiries</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#f59e0b,#f97316);">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <div>
+            <div class="stat-value">{{ pendingCount }}</div>
+            <div class="stat-label">Pending Enquiries</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <div>
+            <div class="stat-value">{{ resolvedCount }}</div>
+            <div class="stat-label">Resolved Enquiries</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enquiries Table -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <span class="table-card-title">Enquiries List</span>
+        <span class="badge bg-primary rounded-pill">{{ enquiresList.length }} records</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover" id="enquiriesTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Customer</th>
+              <th>Contact</th>
+              <th>Service</th>
+              <th>Subject</th>
+              <th>Date</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of enquiresList; let i = index">
+              <td><span class="text-muted">#{{ e.id || i + 1 }}</span></td>
+              <td>
+                <div class="fw-600">{{ e.fullName }}</div>
+                <div class="text-muted small">{{ e.email }}</div>
+              </td>
+              <td>{{ e.mobile }}</td>
+              <td><span class="badge bg-light text-dark border">{{ e.serviceName || 'Service #' + e.serviceId }}</span></td>
+              <td>{{ e.subject }}</td>
+              <td>{{ e.createdate | date:'yyyy-MM-dd' }}</td>
+              <td class="text-center">
+                <button class="btn-action btn-view" (click)="viewEnquiry(e)" title="View Details">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+                <button class="btn-action btn-delete" (click)="deleteEnquire(e.id)" title="Delete">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="enquiresList.length === 0">
+              <td colspan="7" class="text-center py-4 text-muted">No enquiries found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── View Enquiry Modal overlay (simple css modal) ── -->
+<div class="modal fade show" id="viewModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.5);" *ngIf="selectedEnquiry">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-inbox me-2"></i>Enquiry Details</h5>
+        <button type="button" class="btn-close" (click)="closeEnquiry()"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="detail-label">Full Name</div>
+            <div class="detail-value">{{ selectedEnquiry.fullName }}</div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-label">Email</div>
+            <div class="detail-value">{{ selectedEnquiry.email }}</div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-label">Phone</div>
+            <div class="detail-value">{{ selectedEnquiry.mobile }}</div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-label">Service</div>
+            <div class="detail-value">{{ selectedEnquiry.serviceName || 'Service #' + selectedEnquiry.serviceId }}</div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-label">Subject</div>
+            <div class="detail-value">{{ selectedEnquiry.subject }}</div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-label">Date Submitted</div>
+            <div class="detail-value">{{ selectedEnquiry.createdate | date:'yyyy-MM-dd' }}</div>
+          </div>
+          <div class="col-12">
+            <div class="detail-label">Message</div>
+            <div class="detail-value mt-1 p-3 bg-light rounded">
+              {{ selectedEnquiry.message }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeEnquiry()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
