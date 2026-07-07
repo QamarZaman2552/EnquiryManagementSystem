@@ -380,3 +380,24 @@
       text-decoration: underline;
     }
   
+/* ── CUSTOM CLASSES FOR INLINE STYLE REPLACEMENT ── */
+.navbar-toggler-custom {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar-toggler-icon-custom {
+  filter: invert(1);
+}
+
+.required-star-inline {
+  color: #f87171;
+}
+
+.privacy-note-custom {
+  font-size: 0.82rem;
+  color: #475569;
+}
+
+.footer-brand-strong {
+  color: #fff;
+}

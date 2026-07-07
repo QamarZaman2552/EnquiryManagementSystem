@@ -65,10 +65,9 @@
                   Rate (PKR) <span class="required-star">*</span>
                 </label>
                 <div class="input-group">
-                  <span class="input-group-text bg-white border-end-0"
-                    style="border-radius:9px 0 0 9px; font-size:0.85rem; color:#94a3b8;">PKR</span>
-                  <input type="number" class="form-control border-start-0" id="serviceRate" name="rate"
-                    placeholder="0.00" min="0" step="0.01" required style="border-radius:0 9px 9px 0;"
+                  <span class="input-group-text bg-white border-end-0 input-group-currency-label">PKR</span>
+                  <input type="number" class="form-control border-start-0 input-group-rate-input" id="serviceRate" name="rate"
+                    placeholder="0.00" min="0" step="0.01" required
                     [(ngModel)]="newService.rate" #serviceRateInput="ngModel"
                     [class.is-invalid]="serviceForm.submitted && serviceRateInput.invalid" />
                 </div>
@@ -81,14 +80,14 @@
                   <div class="form-check">
                     <input class="form-check-input" type="radio" name="isActive" id="statusActive"
                       [value]="true" [(ngModel)]="newService.isActive" />
-                    <label class="form-check-label" for="statusActive" style="font-size:0.85rem;">
+                    <label class="form-check-label form-check-label-custom" for="statusActive">
                       <i class="bi bi-check-circle text-success me-1"></i>Active
                     </label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input" type="radio" name="isActive" id="statusInactive"
                       [value]="false" [(ngModel)]="newService.isActive" />
-                    <label class="form-check-label" for="statusInactive" style="font-size:0.85rem;">
+                    <label class="form-check-label form-check-label-custom" for="statusInactive">
                       <i class="bi bi-x-circle text-danger me-1"></i>Inactive
                     </label>
                   </div>
@@ -112,15 +111,15 @@
         <!-- Quick Stats -->
         <div class="row g-3 mt-2">
           <div class="col-6">
-            <div class="bg-white rounded-3 border p-3 text-center" style="box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-              <div style="font-size:1.4rem; font-weight:700; color:#0f172a;">{{ totalCount }}</div>
-              <div style="font-size:0.75rem; color:#94a3b8;">Total Services</div>
+            <div class="bg-white rounded-3 border p-3 text-center stats-card-custom">
+              <div class="stats-val-custom">{{ totalCount }}</div>
+              <div class="stats-lbl-custom">Total Services</div>
             </div>
           </div>
           <div class="col-6">
-            <div class="bg-white rounded-3 border p-3 text-center" style="box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-              <div style="font-size:1.4rem; font-weight:700; color:#16a34a;">{{ activeCount }}</div>
-              <div style="font-size:0.75rem; color:#94a3b8;">Active Services</div>
+            <div class="bg-white rounded-3 border p-3 text-center stats-card-custom">
+              <div class="stats-val-active">{{ activeCount }}</div>
+              <div class="stats-lbl-custom">Active Services</div>
             </div>
           </div>
         </div>
@@ -153,7 +152,7 @@
                   <td>
                     <div class="d-flex align-items-center gap-2">
                       <div class="service-icon-cell"><i class="bi bi-gear-fill"></i></div>
-                      <div style="font-weight:600;">{{ s.serviceName }}</div>
+                      <div class="service-name-cell">{{ s.serviceName }}</div>
                     </div>
                   </td>
                   <td><strong>{{ s.rate }}</strong></td>
@@ -208,8 +207,8 @@
     <div class="mb-3">
       <label class="form-label">Rate (PKR) <span class="required-star">*</span></label>
       <div class="input-group">
-        <span class="input-group-text bg-white border-end-0" style="border-radius:9px 0 0 9px; font-size:0.85rem; color:#94a3b8;">PKR</span>
-        <input type="number" class="form-control border-start-0" [(ngModel)]="editService.rate" min="0" style="border-radius:0 9px 9px 0;" />
+        <span class="input-group-text bg-white border-end-0 input-group-currency-label">PKR</span>
+        <input type="number" class="form-control border-start-0 input-group-rate-input" [(ngModel)]="editService.rate" min="0" />
       </div>
     </div>
     <div class="mb-4">
@@ -218,14 +217,14 @@
         <div class="form-check">
           <input class="form-check-input" type="radio" name="editIsActive" id="editStatusActive"
             [value]="true" [(ngModel)]="editService.isActive" />
-          <label class="form-check-label" for="editStatusActive" style="font-size:0.85rem;">
+          <label class="form-check-label form-check-label-custom" for="editStatusActive">
             <i class="bi bi-check-circle text-success me-1"></i>Active
           </label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="radio" name="editIsActive" id="editStatusInactive"
             [value]="false" [(ngModel)]="editService.isActive" />
-          <label class="form-check-label" for="editStatusInactive" style="font-size:0.85rem;">
+          <label class="form-check-label form-check-label-custom" for="editStatusInactive">
             <i class="bi bi-x-circle text-danger me-1"></i>Inactive
           </label>
         </div>
