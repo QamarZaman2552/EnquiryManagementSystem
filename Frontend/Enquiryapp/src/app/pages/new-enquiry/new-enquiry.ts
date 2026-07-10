@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-new-enquiry',
@@ -12,8 +13,9 @@ import { AuthService } from '../../services/auth';
 })
 export class NewEnquiry implements OnInit {
   servicesList: any[] = [];
+  isLoading = false;
+  isSubmitting = false;
 
-  // form-Fields
   formData = {
     fullName: '',
     email: '',
@@ -23,40 +25,34 @@ export class NewEnquiry implements OnInit {
     serviceId: 0,
   };
 
-  constructor(private api: Api, private cdr: ChangeDetectorRef, public auth: AuthService) { }
+  constructor(private api: Api, public auth: AuthService, private toast: ToastService) {}
 
-  ngOnInit() {
-    this.loadServices();
-  }
+  ngOnInit() { this.loadServices(); }
 
   get isAdmin(): boolean {
-    return this.auth.isLoggedIn();
+    return localStorage.getItem('role') === 'Admin';
   }
 
   loadServices() {
+    this.isLoading = true;
     this.api.getServices().subscribe({
-      next: (data) => {
-        this.servicesList = data;
-        this.cdr.detectChanges(); // Force template dropdown to populate
-      },
-      error: (err) => {
-        console.error('Error loading services', err);
-      }
+      next: (data) => { this.servicesList = data; this.isLoading = false; },
+      error: () => { this.isLoading = false; }
     });
   }
 
   submitEnquiry() {
-    if (this.isAdmin) {
-      alert('Administrators cannot submit enquiries.');
-      return;
-    }
+    if (this.isAdmin) return;
+    this.isSubmitting = true;
     this.api.addNewEnquiry(this.formData).subscribe({
-      next: (res) => {
-        alert('Enquiry submitted successfully');
-        this.formData = { fullName: '', email: '', mobile: '', subject: '', message: '', serviceId: 0 }; //reset form
+      next: () => {
+        this.isSubmitting = false;
+        this.toast.success('Enquiry submitted successfully! We will contact you shortly.');
+        this.formData = { fullName: '', email: '', mobile: '', subject: '', message: '', serviceId: 0 };
       },
-      error: (err) => {
-        alert('Error submitting enquiry');
+      error: () => {
+        this.isSubmitting = false;
+        this.toast.error('Failed to submit enquiry. Please try again.');
       }
     });
   }

@@ -1,14 +1,25 @@
 import { Routes } from '@angular/router';
-import { NewEnquiry } from './pages/new-enquiry/new-enquiry';
-import { LoginPage } from './pages/login-page/login-page';
-import { Enquires } from './pages/enquires/enquires';
-import { Services } from './pages/services/services';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'enquiry', pathMatch: 'full' },
-  { path: 'enquiry', component: NewEnquiry },
-  { path: 'login', component: LoginPage },
-  { path: 'admin/enquiries', component: Enquires },
-  { path: 'admin/services', component: Services },
+  {
+    path: 'enquiry',
+    loadComponent: () => import('./pages/new-enquiry/new-enquiry').then(m => m.NewEnquiry)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login-page/login-page').then(m => m.LoginPage)
+  },
+  {
+    path: 'admin/enquiries',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/enquires/enquires').then(m => m.Enquires)
+  },
+  {
+    path: 'admin/services',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/services/services').then(m => m.Services)
+  },
   { path: '**', redirectTo: 'enquiry' }
 ];

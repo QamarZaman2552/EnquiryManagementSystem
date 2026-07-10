@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-enquires',
@@ -13,63 +14,33 @@ import { AuthService } from '../../services/auth';
 export class Enquires implements OnInit {
   enquiresList: any[] = [];
   selectedEnquiry: any = null;
+  isLoading = false;
 
-  get pendingCount(): number {
-    return this.enquiresList.filter(e => !e.status || e.status === 'Pending').length;
-  }
+  get pendingCount():  number { return this.enquiresList.filter(e => !e.status || e.status === 'Pending').length; }
+  get resolvedCount(): number { return this.enquiresList.filter(e => e.status === 'Resolved').length; }
 
-  get resolvedCount(): number {
-    return this.enquiresList.filter(e => e.status === 'Resolved').length;
-  }
+  constructor(private api: Api, private auth: AuthService, private router: Router, private toast: ToastService) {}
 
-  constructor(
-    private api: Api,
-    private cdr: ChangeDetectorRef,
-    private auth: AuthService,
-    private router: Router
-  ) { }
-
-  ngOnInit() {
-    this.loadsEnquires();
-  }
+  ngOnInit() { this.loadsEnquires(); }
 
   loadsEnquires() {
-    console.log('loadsEnquires: fetching from', this.api.getEnquiresWithNames);
+    this.isLoading = true;
     this.api.getEnquiresWithNames().subscribe({
-      next: (data) => {
-        console.log('loadsEnquires: success', data);
-        this.enquiresList = data;
-        this.cdr.detectChanges(); // Force template to render the new data
-      },
-      error: (err) => {
-        console.error('loadsEnquires: error', err);
-      }
+      next: (data) => { this.enquiresList = data; this.isLoading = false; },
+      error: () => { this.isLoading = false; this.toast.error('Failed to load enquiries.'); }
     });
   }
 
-  viewEnquiry(enquiry: any) {
-    this.selectedEnquiry = enquiry;
-  }
-
-  closeEnquiry() {
-    this.selectedEnquiry = null;
-  }
+  viewEnquiry(enquiry: any)  { this.selectedEnquiry = enquiry; }
+  closeEnquiry()             { this.selectedEnquiry = null; }
 
   deleteEnquire(id: number) {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
     this.api.deleteEnquiry(id).subscribe({
-      next: () => {
-        alert('Enquiry deleted successfully');
-        this.loadsEnquires();
-      },
-      error: () => {
-        alert('Error deleting enquiry');
-      }
+      next: () => { this.toast.success('Enquiry deleted.'); this.loadsEnquires(); },
+      error: () => this.toast.error('Failed to delete enquiry.')
     });
   }
 
-  logout() {
-    this.auth.logout();
-    this.router.navigate(['/login']);
-  }
+  logout() { this.auth.logout(); this.router.navigate(['/login']); }
 }
