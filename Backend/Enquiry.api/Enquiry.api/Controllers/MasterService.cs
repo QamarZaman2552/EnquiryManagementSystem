@@ -1,6 +1,7 @@
 using Enquiry.api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Enquiry.api.Controllers
 {
@@ -21,6 +22,7 @@ namespace Enquiry.api.Controllers
             return services;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult AddNewServices(Services obj)
         {
@@ -33,6 +35,7 @@ namespace Enquiry.api.Controllers
             return Created("service create suceesfully", obj);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{ServiceId}")]
         public IActionResult UpdateServices(int ServiceId, Services obj)
         {
@@ -53,6 +56,7 @@ namespace Enquiry.api.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{ServiceId}")]
         public IActionResult ServiceDelbyId(int ServiceId)
         {

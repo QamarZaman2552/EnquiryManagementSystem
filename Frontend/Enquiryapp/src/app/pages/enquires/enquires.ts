@@ -34,6 +34,31 @@ export class Enquires implements OnInit {
   viewEnquiry(enquiry: any)  { this.selectedEnquiry = enquiry; }
   closeEnquiry()             { this.selectedEnquiry = null; }
 
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'In Progress': return 'badge bg-info text-dark';
+      case 'Resolved': return 'badge bg-success';
+      case 'Closed': return 'badge bg-secondary';
+      default: return 'badge bg-warning text-dark';
+    }
+  }
+
+  onStatusChange(enquiry: any, event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const newStatus = select.value;
+    
+    this.api.updateStatus(enquiry.id, newStatus).subscribe({
+      next: () => {
+        enquiry.status = newStatus;
+        this.toast.success(`Status updated to ${newStatus}`);
+      },
+      error: () => {
+        this.toast.error('Failed to update status.');
+        select.value = enquiry.status || 'Pending';
+      }
+    });
+  }
+
   deleteEnquire(id: number) {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
     this.api.deleteEnquiry(id).subscribe({

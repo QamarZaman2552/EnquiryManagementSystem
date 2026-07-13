@@ -1,0 +1,223 @@
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-name"><i class="bi bi-headset me-2"></i>Enquiry<span>Pro</span></div>
+    <div class="sidebar-subtitle">Admin Management Panel</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="/admin/dashboard" class="sidebar-link active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+
+    <div class="nav-section-label mt-2">Management</div>
+    <a href="/admin/enquiries" class="sidebar-link"><i class="bi bi-inbox"></i> All Enquiries</a>
+    <a href="/admin/services" class="sidebar-link"><i class="bi bi-grid-1x2"></i> Services</a>
+
+    <div class="nav-section-label mt-2">System</div>
+    <a href="javascript:void(0)" (click)="logout()" class="sidebar-link"><i class="bi bi-box-arrow-left"></i> Logout</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="admin-badge">
+      <div class="admin-avatar">A</div>
+      <div>
+        <div class="admin-name">Admin User</div>
+        <div class="admin-role">System Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<div class="main-content">
+
+  <!-- Top Header -->
+  <div class="top-header">
+    <div>
+      <div class="page-heading"><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard Overview</div>
+      <div class="breadcrumb-custom">Admin &rsaquo; Dashboard</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <div class="mt-2 text-muted">Loading dashboard statistics...</div>
+    </div>
+
+    <div *ngIf="!isLoading">
+      <!-- Stats Row -->
+      <div class="row g-3 mb-4">
+        <!-- Total Enquiries -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-blue">
+              <i class="bi bi-inbox-fill"></i>
+            </div>
+            <div>
+              <div class="stat-value">{{ totalEnquiries }}</div>
+              <div class="stat-label">Total</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-orange">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div>
+              <div class="stat-value">{{ pendingCount }}</div>
+              <div class="stat-label">Pending</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- In Progress -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-cyan">
+              <i class="bi bi-gear-wide-connected"></i>
+            </div>
+            <div>
+              <div class="stat-value">{{ inProgressCount }}</div>
+              <div class="stat-label">In Progress</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resolved -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-green">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <div>
+              <div class="stat-value">{{ resolvedCount }}</div>
+              <div class="stat-label">Resolved</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Closed -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-gray">
+              <i class="bi bi-archive"></i>
+            </div>
+            <div>
+              <div class="stat-value">{{ closedCount }}</div>
+              <div class="stat-label">Closed</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Services -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-purple">
+              <i class="bi bi-grid-1x2-fill"></i>
+            </div>
+            <div>
+              <div class="stat-value">{{ totalServices }}</div>
+              <div class="stat-label">Services</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Columns -->
+      <div class="row g-4">
+        <!-- Recent Enquiries -->
+        <div class="col-lg-8">
+          <div class="table-card">
+            <div class="table-card-header d-flex justify-content-between align-items-center">
+              <span class="table-card-title">Recent Enquiries</span>
+              <a href="/admin/enquiries" class="btn btn-sm btn-outline-primary rounded-pill px-3">View All</a>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let e of recentEnquiries">
+                    <td>
+                      <div class="fw-600">{{ e.fullName }}</div>
+                      <div class="text-muted small">{{ e.email }}</div>
+                    </td>
+                    <td><span class="badge bg-light text-dark border">{{ e.serviceName || 'Service #' + e.serviceId }}</span></td>
+                    <td>
+                      <span [class]="getStatusClass(e.status || 'Pending')">
+                        {{ e.status || 'Pending' }}
+                      </span>
+                    </td>
+                    <td>{{ e.createdate | date:'yyyy-MM-dd' }}</td>
+                  </tr>
+                  <tr *ngIf="recentEnquiries.length === 0">
+                    <td colspan="4" class="text-center py-4 text-muted">No recent enquiries found.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Access / Services Breakdown -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
+            <h5 class="card-title fw-bold mb-3"><i class="bi bi-lightning-charge me-2 text-warning"></i>Quick Actions</h5>
+            <div class="d-grid gap-2">
+              <a href="/admin/enquiries" class="btn btn-primary text-start p-3 rounded-3 d-flex align-items-center">
+                <i class="bi bi-inbox fs-4 me-3"></i>
+                <div>
+                  <div class="fw-bold">Manage Enquiries</div>
+                  <div class="small opacity-75">Update status and response logs</div>
+                </div>
+              </a>
+              <a href="/admin/services" class="btn btn-dark text-start p-3 rounded-3 d-flex align-items-center">
+                <i class="bi bi-grid-1x2 fs-4 me-3 text-info"></i>
+                <div>
+                  <div class="fw-bold">Manage Services</div>
+                  <div class="small opacity-75">Add, edit, or disable services</div>
+                </div>
+              </a>
+              <a href="/enquiry" target="_blank" class="btn btn-outline-secondary text-start p-3 rounded-3 d-flex align-items-center">
+                <i class="bi bi-arrow-up-right-circle fs-4 me-3"></i>
+                <div>
+                  <div class="fw-bold">Open Public Form</div>
+                  <div class="small text-muted">Open user enquiry submission page</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm p-4 bg-white rounded-3 mt-4">
+            <h5 class="card-title fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-info"></i>Services Overview</h5>
+            <div class="list-group list-group-flush">
+              <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center" *ngFor="let s of servicesList | slice:0:5">
+                <span class="fw-500">{{ s.serviceName }}</span>
+                <span class="badge bg-light text-success border">PKR {{ s.rate | number }}</span>
+              </div>
+              <div class="text-center pt-3" *ngIf="servicesList.length > 5">
+                <span class="text-muted small">+ {{ servicesList.length - 5 }} more services</span>
+              </div>
+              <div class="text-center py-3 text-muted small" *ngIf="servicesList.length === 0">
+                No active services found.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

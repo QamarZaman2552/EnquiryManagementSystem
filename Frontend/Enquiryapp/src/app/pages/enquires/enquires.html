@@ -93,6 +93,7 @@
               <th>Contact</th>
               <th>Service</th>
               <th>Subject</th>
+              <th>Status</th>
               <th>Date</th>
               <th class="text-center">Actions</th>
             </tr>
@@ -107,6 +108,11 @@
               <td>{{ e.mobile }}</td>
               <td><span class="badge bg-light text-dark border">{{ e.serviceName || 'Service #' + e.serviceId }}</span></td>
               <td>{{ e.subject }}</td>
+              <td>
+                <span [class]="getStatusClass(e.status || 'Pending')">
+                  {{ e.status || 'Pending' }}
+                </span>
+              </td>
               <td>{{ e.createdate | date:'yyyy-MM-dd' }}</td>
               <td class="text-center">
                 <button class="btn-action btn-view" (click)="viewEnquiry(e)" title="View Details">
@@ -118,7 +124,7 @@
               </td>
             </tr>
             <tr *ngIf="enquiresList.length === 0">
-              <td colspan="7" class="text-center py-4 text-muted">No enquiries found.</td>
+              <td colspan="8" class="text-center py-4 text-muted">No enquiries found.</td>
             </tr>
           </tbody>
         </table>
@@ -160,6 +166,17 @@
           <div class="col-md-6">
             <div class="detail-label">Date Submitted</div>
             <div class="detail-value">{{ selectedEnquiry.createdate | date:'yyyy-MM-dd' }}</div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-label">Status</div>
+            <div class="detail-value">
+              <select class="form-select form-select-sm w-auto" [value]="selectedEnquiry.status || 'Pending'" (change)="onStatusChange(selectedEnquiry, $event)">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
           </div>
           <div class="col-12">
             <div class="detail-label">Message</div>

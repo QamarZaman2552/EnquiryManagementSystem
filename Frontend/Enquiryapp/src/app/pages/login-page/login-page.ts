@@ -24,7 +24,7 @@ export class LoginPage {
     this.auth.login(this.username, this.password).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/admin/enquiries']);
+        this.router.navigate(['/admin/dashboard']);
       },
       error: () => {
         this.isLoading = false;

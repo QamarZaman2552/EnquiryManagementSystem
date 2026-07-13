@@ -40,8 +40,8 @@ export class Api {
     deleteEnquiry(id: number): Observable<any> {
         return this.http.delete(`${this.baseUrl}/Enquiry/${id}`);
     }
-    // PUT update enquiry status
-    updateStatus(id: number, data: any): Observable<any> {
-        return this.http.put(`${this.baseUrl}/Enquiry/status/${id}`, data);
+    // PATCH update enquiry status
+    updateStatus(id: number, status: string): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/Enquiry/status/${id}`, { status });
     }
 }

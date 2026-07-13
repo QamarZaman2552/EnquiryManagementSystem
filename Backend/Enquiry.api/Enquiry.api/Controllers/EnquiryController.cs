@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Enquiry.api.Models;
 
@@ -12,7 +13,7 @@ public class EnquiryController : ControllerBase
         _context = context;
      }
 
-    // GET: api/EnquiryMaster
+    // GET: api/EnquiryMaster  (public - users don't need auth)
     [HttpGet]
     public async Task<ActionResult<IEnumerable<object>>> GetEnquiryMaster()
     {
@@ -28,6 +29,7 @@ public class EnquiryController : ControllerBase
                 message = !string.IsNullOrEmpty(e.Message) ? e.Message : "N/A",
                 serviceId = e.serviceId,
                 serviceName = e.Service != null ? e.Service.serviceName : "N/A",
+                status = e.Status,
                 createdate = e.EnquiryDate
             })
             .ToListAsync();
@@ -35,7 +37,8 @@ public class EnquiryController : ControllerBase
         return Ok(enquiries);
     }
 
-    // GET: api/EnquiryMaster/5
+    // GET: api/EnquiryMaster/5  (Admin only)
+    [Authorize(Roles = "Admin")]
     [HttpGet("{enquiryid}")]
     public async Task<ActionResult<EnquiryMaster>> GetEnquiryMaster(int enquiryid)
     {
@@ -49,8 +52,8 @@ public class EnquiryController : ControllerBase
         return enquirymaster;
     }
 
-    // PUT: api/EnquiryMaster/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    // PUT: api/EnquiryMaster/5  (Admin only)
+    [Authorize(Roles = "Admin")]
     [HttpPut("{enquiryid}")]
     public async Task<IActionResult> PutEnquiryMaster(int? enquiryid, EnquiryMaster enquirymaster)
     {
@@ -80,8 +83,7 @@ public class EnquiryController : ControllerBase
         return NoContent();
     }
 
-    // POST: api/EnquiryMaster
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    // POST: api/EnquiryMaster  (Public - users submit enquiries without login)
     [HttpPost]
     public async Task<ActionResult<EnquiryMaster>> PostEnquiryMaster(EnquiryDto dto)
     {
@@ -118,7 +120,25 @@ public class EnquiryController : ControllerBase
         }
     }
 
-    // DELETE: api/EnquiryMaster/5
+    // PATCH: api/EnquiryMaster/status/5  (Admin only)
+    [Authorize(Roles = "Admin")]
+    [HttpPatch("status/{enquiryid}")]
+    public async Task<IActionResult> UpdateStatus(int enquiryid, [FromBody] StatusUpdateDto dto)
+    {
+        var enquiry = await _context.EnquiryMasters.FindAsync(enquiryid);
+        if (enquiry == null) return NotFound(new { message = "Enquiry not found." });
+
+        var allowed = new[] { "Pending", "In Progress", "Resolved", "Closed" };
+        if (!allowed.Contains(dto.Status))
+            return BadRequest(new { message = "Invalid status value." });
+
+        enquiry.Status = dto.Status;
+        await _context.SaveChangesAsync();
+        return Ok(new { message = "Status updated.", status = enquiry.Status });
+    }
+
+    // DELETE: api/EnquiryMaster/5  (Admin only)
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{enquiryid}")]
     public async Task<IActionResult> DeleteEnquiryMaster(int? enquiryid)
     {
@@ -148,4 +168,9 @@ public class EnquiryDto
     public string subject { get; set; }
     public string message { get; set; }
     public int serviceId { get; set; }
+}
+
+public class StatusUpdateDto
+{
+    public string Status { get; set; } = string.Empty;
 }
