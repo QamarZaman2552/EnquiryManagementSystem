@@ -167,7 +167,7 @@
                     </label>
                     <select class="form-select" id="serviceSelect" name="serviceId" required
                       [(ngModel)]="formData.serviceId" [disabled]="isAdmin">
-                      <option value="0" disabled>-- Choose a service --</option>
+                      <option [value]="null" disabled>-- Choose a service --</option>
                       <option *ngFor="let s of servicesList" [value]="s.serviceId">
                         {{ s.serviceName }}
                       </option>

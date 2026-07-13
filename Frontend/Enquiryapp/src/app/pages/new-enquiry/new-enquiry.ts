@@ -22,7 +22,7 @@ export class NewEnquiry implements OnInit {
     mobile: '',
     subject: '',
     message: '',
-    serviceId: 0,
+    serviceId: null as number | null,
   };
 
   constructor(private api: Api, public auth: AuthService, private toast: ToastService) {}
@@ -48,7 +48,7 @@ export class NewEnquiry implements OnInit {
       next: () => {
         this.isSubmitting = false;
         this.toast.success('Enquiry submitted successfully! We will contact you shortly.');
-        this.formData = { fullName: '', email: '', mobile: '', subject: '', message: '', serviceId: 0 };
+        this.formData = { fullName: '', email: '', mobile: '', subject: '', message: '', serviceId: null };
       },
       error: () => {
         this.isSubmitting = false;

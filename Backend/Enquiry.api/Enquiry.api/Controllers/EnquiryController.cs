@@ -85,6 +85,14 @@ public class EnquiryController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<EnquiryMaster>> PostEnquiryMaster(EnquiryDto dto)
     {
+        // Validate serviceId: must be > 0 and must exist in Services table
+        if (dto.serviceId <= 0)
+            return BadRequest(new { message = "Please select a valid service." });
+
+        var serviceExists = await _context.Services.AnyAsync(s => s.serviceId == dto.serviceId);
+        if (!serviceExists)
+            return BadRequest(new { message = $"Service with ID {dto.serviceId} does not exist." });
+
         var enquirymaster = new EnquiryMaster
         {
             CustomerName = dto.fullName,
@@ -98,10 +106,16 @@ public class EnquiryController : ControllerBase
             Message = dto.message
         };
 
-        _context.EnquiryMasters.Add(enquirymaster);
-        await _context.SaveChangesAsync();
-
-        return Ok(enquirymaster);
+        try
+        {
+            _context.EnquiryMasters.Add(enquirymaster);
+            await _context.SaveChangesAsync();
+            return Ok(enquirymaster);
+        }
+        catch (DbUpdateException ex)
+        {
+            return StatusCode(500, new { message = "Failed to save enquiry.", detail = ex.InnerException?.Message });
+        }
     }
 
     // DELETE: api/EnquiryMaster/5
