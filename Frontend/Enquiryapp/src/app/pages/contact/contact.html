@@ -1,0 +1,257 @@
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand navbar-brand-text" href="/enquiry">
+      <i class="bi bi-headset me-2"></i>Enquiry<span>Pro</span>
+    </a>
+    <button class="navbar-toggler navbar-toggler-custom" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon navbar-toggler-icon-custom"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link nav-link-custom" href="/enquiry">Submit Enquiry</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-custom active-nav" href="/contact">Contact</a></li>
+      </ul>
+      <a *ngIf="!isAdmin" href="/login" class="btn btn-admin-login">
+        <i class="bi bi-shield-lock me-1"></i>Admin Login
+      </a>
+      <a *ngIf="isAdmin" href="/admin/enquiries" class="btn btn-admin-login">
+        <i class="bi bi-shield-shaded me-1"></i>Admin Dashboard
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO SECTION ── -->
+<section class="hero-section">
+  <div class="container position-relative">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <div class="hero-badge"><i class="bi bi-stars me-1"></i>We're Here to Help</div>
+        <h1 class="hero-title">
+          Get In <span>Touch</span><br />With Our Team
+        </h1>
+        <p class="hero-description">
+          Have a question, feedback, or need support? Reach out through any channel below and we'll respond promptly.
+        </p>
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <a href="mailto:support@enquirypro.com" class="btn btn-primary btn-lg rounded-pill px-4">
+            <i class="bi bi-envelope me-2"></i>Email Us
+          </a>
+          <a href="tel:+923000000000" class="btn btn-outline-light btn-lg rounded-pill px-4">
+            <i class="bi bi-telephone me-2"></i>Call Us
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="row g-3">
+          <div class="col-6"><div class="hero-stat"><div class="stat-num">24h</div><div class="stat-label">Response Time</div></div></div>
+          <div class="col-6"><div class="hero-stat"><div class="stat-num">98%</div><div class="stat-label">Satisfaction Rate</div></div></div>
+          <div class="col-6"><div class="hero-stat"><div class="stat-num">7/7</div><div class="stat-label">Days Available</div></div></div>
+          <div class="col-6"><div class="hero-stat"><div class="stat-num">500+</div><div class="stat-label">Happy Clients</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT CARDS ── -->
+<section class="contact-cards-section">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4">
+        <div class="contact-info-card">
+          <div class="contact-info-icon"><i class="bi bi-envelope-fill"></i></div>
+          <h5 class="contact-info-title">Email Address</h5>
+          <p class="contact-info-text">Drop us an email anytime.<br />We respond within 24 hours.</p>
+          <a href="mailto:support@enquirypro.com" class="contact-info-link">support&#64;enquirypro.com</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="contact-info-card">
+          <div class="contact-info-icon"><i class="bi bi-telephone-fill"></i></div>
+          <h5 class="contact-info-title">Phone Number</h5>
+          <p class="contact-info-text">Speak to our support team<br />Mon–Sat, 9am–6pm PKT.</p>
+          <a href="tel:+923000000000" class="contact-info-link">+92-300-0000000</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="contact-info-card">
+          <div class="contact-info-icon"><i class="bi bi-geo-alt-fill"></i></div>
+          <h5 class="contact-info-title">Office Address</h5>
+          <p class="contact-info-text">Visit us at our office<br />during business hours.</p>
+          <span class="contact-info-link">Karachi, Sindh, Pakistan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT FORM + SIDEBAR ── -->
+<section class="form-section" id="contact-form">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+
+      <!-- Form Card -->
+      <div class="col-lg-8">
+        <div class="form-card">
+          <div class="form-card-header">
+            <h2><i class="bi bi-chat-dots me-2"></i>Send Us a Message</h2>
+            <p>Fill in the form and we'll get back to you as soon as possible.</p>
+          </div>
+          <div class="form-card-body">
+
+            <div *ngIf="submitted && !hasError" class="alert alert-success border-0 rounded-3 mb-4 d-flex align-items-center">
+              <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+              <div>Your message has been sent! We'll respond within 24 hours.</div>
+            </div>
+
+            <div *ngIf="hasError" class="alert alert-danger border-0 rounded-3 mb-4 d-flex align-items-center">
+              <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+              <div>Something went wrong. Please try again later.</div>
+            </div>
+
+            <form #contactForm="ngForm" (ngSubmit)="contactForm.form.valid && sendMessage(contactForm)"
+              [class.was-validated]="contactForm.submitted" novalidate>
+
+              <div class="row g-3 mb-3">
+                <!-- Full Name -->
+                <div class="col-md-6">
+                  <label for="fullName" class="form-label">Full Name <span class="required-star">*</span></label>
+                  <div class="input-icon-group">
+                    <i class="bi bi-person input-icon"></i>
+                    <input type="text" class="form-control" id="fullName" name="fullName"
+                      placeholder="e.g. Qamar Zaman" required [(ngModel)]="formData.fullName" />
+                  </div>
+                  <div class="invalid-feedback">Please enter your full name.</div>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                  <label for="email" class="form-label">Email Address <span class="required-star">*</span></label>
+                  <div class="input-icon-group">
+                    <i class="bi bi-envelope input-icon"></i>
+                    <input type="email" class="form-control" id="email" name="email"
+                      placeholder="e.g. qamar@example.com" required
+                      pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$"
+                      [(ngModel)]="formData.email" />
+                  </div>
+                  <div class="invalid-feedback">Please enter a valid email address.</div>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6">
+                  <label for="phone" class="form-label">Phone Number</label>
+                  <div class="input-icon-group">
+                    <i class="bi bi-telephone input-icon"></i>
+                    <input type="tel" class="form-control" id="phone" name="phone"
+                      placeholder="e.g. 03001234567" pattern="^[0-9]{7,15}$"
+                      [(ngModel)]="formData.phone" />
+                  </div>
+                  <div class="invalid-feedback">Please enter a valid phone number.</div>
+                </div>
+
+                <!-- Subject -->
+                <div class="col-md-6">
+                  <label for="subject" class="form-label">Subject <span class="required-star">*</span></label>
+                  <div class="input-icon-group">
+                    <i class="bi bi-tag input-icon"></i>
+                    <input type="text" class="form-control" id="subject" name="subject"
+                      placeholder="How can we help?" required [(ngModel)]="formData.subject" />
+                  </div>
+                  <div class="invalid-feedback">Please enter a subject.</div>
+                </div>
+
+                <!-- Message -->
+                <div class="col-12">
+                  <label for="message" class="form-label">Message <span class="required-star">*</span></label>
+                  <textarea class="form-control" id="message" name="message" rows="5"
+                    placeholder="Write your message here..." required maxlength="1000"
+                    [(ngModel)]="formData.message"></textarea>
+                  <div class="d-flex justify-content-between">
+                    <div class="invalid-feedback">Please enter your message.</div>
+                    <div class="char-count"><span>{{ formData.message.length }}</span>/1000 characters</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Privacy Note -->
+              <div class="alert alert-light border rounded-3 py-2 px-3 mb-3 privacy-note-custom">
+                <i class="bi bi-shield-check text-success me-1"></i>
+                Your information is private and will only be used to respond to your message.
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-flex gap-3 justify-content-end flex-wrap">
+                <button type="button" class="btn btn-reset" (click)="resetForm(contactForm)">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                </button>
+                <button type="submit" class="btn btn-submit" id="sendBtn" [disabled]="isSending">
+                  <span *ngIf="isSending" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <i *ngIf="!isSending" class="bi bi-send me-2"></i>
+                  {{ isSending ? 'Sending...' : 'Send Message' }}
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <div class="sidebar-card">
+          <h5 class="sidebar-title"><i class="bi bi-clock me-2"></i>Business Hours</h5>
+          <ul class="hours-list">
+            <li><span>Monday – Friday</span><span class="hours-val">9:00 AM – 6:00 PM</span></li>
+            <li><span>Saturday</span><span class="hours-val">10:00 AM – 4:00 PM</span></li>
+            <li><span class="text-muted">Sunday</span><span class="hours-val text-muted">Closed</span></li>
+          </ul>
+        </div>
+
+        <div class="sidebar-card mt-3">
+          <h5 class="sidebar-title"><i class="bi bi-share me-2"></i>Follow Us</h5>
+          <div class="social-links">
+            <a href="#" class="social-btn facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="social-btn twitter"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="social-btn linkedin"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="social-btn instagram"><i class="bi bi-instagram"></i></a>
+          </div>
+        </div>
+
+        <div class="sidebar-card mt-3">
+          <h5 class="sidebar-title"><i class="bi bi-question-circle me-2"></i>Quick Help</h5>
+          <p class="quick-help-text">Need to submit a service enquiry? Use our dedicated form.</p>
+          <a href="/enquiry" class="btn btn-submit w-100">
+            <i class="bi bi-pencil-square me-2"></i>Submit Enquiry
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer id="footer">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-2 mb-md-0">
+        <strong class="footer-brand-strong">EnquiryPro</strong>&nbsp;|&nbsp; Enquiry Management System
+      </div>
+      <div class="col-md-4 text-center mb-2 mb-md-0">
+        <i class="bi bi-envelope me-1"></i><a href="mailto:support@enquirypro.com">support&#64;enquirypro.com</a>
+        &nbsp;&nbsp;
+        <i class="bi bi-telephone me-1"></i>+92-300-0000000
+      </div>
+      <div class="col-md-4 text-end">
+        &copy; 2025 EnquiryPro. All rights reserved.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button type="button" class="btn-back-to-top" (click)="scrollToTop()" aria-label="Back to top">
+  <i class="bi bi-arrow-up-short"></i>
+</button>
