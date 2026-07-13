@@ -30,7 +30,7 @@ export class NewEnquiry implements OnInit {
   ngOnInit() { this.loadServices(); }
 
   get isAdmin(): boolean {
-    return localStorage.getItem('role') === 'Admin';
+    return !!localStorage.getItem('token') && localStorage.getItem('role') === 'Admin';
   }
 
   loadServices() {
