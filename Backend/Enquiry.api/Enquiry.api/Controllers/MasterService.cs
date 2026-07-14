@@ -1,7 +1,7 @@
 using Enquiry.api.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Enquiry.api.Controllers
 {
@@ -16,62 +16,58 @@ namespace Enquiry.api.Controllers
         }
 
         [HttpGet]
-        public List<Services> GetAllServices()
+        public async Task<ActionResult<List<Services>>> GetAllServices()
         {
-            var services = _context.Services.ToList();
-            return services;
+            var services = await _context.Services.ToListAsync();
+            return Ok(services);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult AddNewServices(Services obj)
+        public async Task<IActionResult> AddNewServices(Services obj)
         {
-            // Reset the ID to 0 so EF Core knows it's a new entity and doesn't try to insert an explicit Identity value.
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             obj.serviceId = 0;
-            // Automatically set the creation date to right now, so you don't have to enter it manually
             obj.createdate = DateTime.Now;
             _context.Services.Add(obj);
-            _context.SaveChanges();
-            return Created("service create suceesfully", obj);
+            await _context.SaveChangesAsync();
+            return Created($"service/{obj.serviceId}", obj);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{ServiceId}")]
-        public IActionResult UpdateServices(int ServiceId, Services obj)
+        public async Task<IActionResult> UpdateServices(int ServiceId, Services obj)
         {
-            var oldServices = _context.Services.SingleOrDefault(x => x.serviceId == ServiceId);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (oldServices != null)
-            {
-                oldServices.serviceName = obj.serviceName;
-                oldServices.rate = obj.rate;
-                oldServices.IsActive = obj.IsActive;
-                _context.SaveChanges();
-                return Ok(new { message = "service updated with id " + ServiceId });
-            }
-            else
-            {
-                // Return a 404 Not Found if the service doesn't exist
+            var oldServices = await _context.Services.SingleOrDefaultAsync(x => x.serviceId == ServiceId);
+
+            if (oldServices == null)
                 return NotFound(new { message = $"Service with id {ServiceId} not found" });
-            }
+
+            oldServices.serviceName = obj.serviceName;
+            oldServices.rate = obj.rate;
+            oldServices.IsActive = obj.IsActive;
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Service updated successfully", id = ServiceId });
         }
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{ServiceId}")]
-        public IActionResult ServiceDelbyId(int ServiceId)
+        public async Task<IActionResult> ServiceDelbyId(int ServiceId)
         {
-            var deloldservices = _context.Services.SingleOrDefault(x => x.serviceId == ServiceId);
+            var deloldservices = await _context.Services.SingleOrDefaultAsync(x => x.serviceId == ServiceId);
             if (deloldservices == null)
-            {
                 return NotFound(new { message = $"Service with id {ServiceId} not found" });
-            }
 
             try
             {
-                // Detach related enquiries first to avoid FK constraint violation
-                var relatedEnquiries = _context.EnquiryMasters
+                var relatedEnquiries = await _context.EnquiryMasters
                     .Where(e => e.serviceId == ServiceId)
-                    .ToList();
+                    .ToListAsync();
 
                 foreach (var enquiry in relatedEnquiries)
                 {
@@ -79,8 +75,8 @@ namespace Enquiry.api.Controllers
                 }
 
                 _context.Services.Remove(deloldservices);
-                _context.SaveChanges();
-                return Ok(new { message = "service deleted with id " + ServiceId });
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Service deleted successfully", id = ServiceId });
             }
             catch (Exception ex)
             {

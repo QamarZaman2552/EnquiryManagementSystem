@@ -11,6 +11,7 @@ namespace Enquiry.api.Models
         public DbSet<EnquiryMaster> EnquiryMasters { get; set; }
         public DbSet<Services> Services { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
