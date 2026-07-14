@@ -309,3 +309,49 @@
   display: block;
   background: rgba(0, 0, 0, 0.5);
 }
+
+/* ── SEARCH & FILTER TOOLBAR ── */
+.table-card-header {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.55rem;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+.search-input {
+  padding-left: 1.75rem;
+  width: 200px;
+  border-radius: 8px;
+  border-color: #e2e8f0;
+  font-size: 0.82rem;
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.12);
+}
+
+.filter-select {
+  width: 130px;
+  border-radius: 8px;
+  border-color: #e2e8f0;
+  font-size: 0.82rem;
+}
+

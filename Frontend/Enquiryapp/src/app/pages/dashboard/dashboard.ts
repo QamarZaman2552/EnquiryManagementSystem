@@ -16,6 +16,9 @@ export class Dashboard implements OnInit {
   servicesList: any[] = [];
   isLoading = false;
 
+  get adminUsername(): string { return this.auth.getUsername() || 'Admin'; }
+  get adminInitial(): string  { return this.adminUsername.charAt(0).toUpperCase(); }
+
   constructor(
     private api: Api,
     private auth: AuthService,

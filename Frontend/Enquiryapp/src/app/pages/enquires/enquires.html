@@ -19,9 +19,9 @@
 
   <div class="sidebar-footer">
     <div class="admin-badge">
-      <div class="admin-avatar">A</div>
+      <div class="admin-avatar">{{ adminInitial }}</div>
       <div>
-        <div class="admin-name">Admin User</div>
+        <div class="admin-name">{{ adminUsername }}</div>
         <div class="admin-role">System Administrator</div>
       </div>
     </div>
@@ -82,7 +82,32 @@
     <div class="table-card">
       <div class="table-card-header">
         <span class="table-card-title">Enquiries List</span>
-        <span class="badge bg-primary rounded-pill">{{ enquiresList.length }} records</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <!-- Search Input -->
+          <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              class="form-control form-control-sm search-input"
+              placeholder="Search name, email, phone..."
+              [(ngModel)]="searchTerm"
+              id="searchEnquiries"
+            />
+          </div>
+          <!-- Status Filter -->
+          <select class="form-select form-select-sm filter-select" [(ngModel)]="filterStatus" id="filterStatus">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+          </select>
+          <!-- Export CSV -->
+          <button class="btn btn-sm btn-success d-flex align-items-center gap-1" (click)="exportToCsv()" title="Export to CSV" id="exportCsvBtn">
+            <i class="bi bi-download"></i> Export CSV
+          </button>
+          <span class="badge bg-primary rounded-pill ms-1">{{ filteredList.length }} records</span>
+        </div>
       </div>
       <div class="table-responsive">
         <table class="table table-hover" id="enquiriesTable">
@@ -99,7 +124,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let e of enquiresList; let i = index">
+            <tr *ngFor="let e of filteredList; let i = index">
               <td><span class="text-muted">#{{ e.id || i + 1 }}</span></td>
               <td>
                 <div class="fw-600">{{ e.fullName }}</div>
@@ -123,8 +148,11 @@
                 </button>
               </td>
             </tr>
-            <tr *ngIf="enquiresList.length === 0">
-              <td colspan="8" class="text-center py-4 text-muted">No enquiries found.</td>
+            <tr *ngIf="filteredList.length === 0">
+              <td colspan="8" class="text-center py-5">
+                <i class="bi bi-inbox fs-2 text-muted d-block mb-2"></i>
+                <span class="text-muted">No enquiries match your search.</span>
+              </td>
             </tr>
           </tbody>
         </table>

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
@@ -7,7 +8,7 @@ import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-enquires',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './enquires.html',
   styleUrl: './enquires.css',
 })
@@ -15,6 +16,28 @@ export class Enquires implements OnInit {
   enquiresList: any[] = [];
   selectedEnquiry: any = null;
   isLoading = false;
+  searchTerm = '';
+  filterStatus = '';
+
+  get adminUsername(): string {
+    return this.auth.getUsername() || 'Admin';
+  }
+
+  get adminInitial(): string {
+    return this.adminUsername.charAt(0).toUpperCase();
+  }
+
+  get filteredList(): any[] {
+    return this.enquiresList.filter(e => {
+      const matchSearch = !this.searchTerm ||
+        (e.fullName || '').toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (e.email || '').toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (e.mobile || '').includes(this.searchTerm);
+      const matchStatus = !this.filterStatus ||
+        (e.status || 'Pending') === this.filterStatus;
+      return matchSearch && matchStatus;
+    });
+  }
 
   get pendingCount():  number { return this.enquiresList.filter(e => !e.status || e.status === 'Pending').length; }
   get resolvedCount(): number { return this.enquiresList.filter(e => e.status === 'Resolved').length; }
@@ -57,6 +80,29 @@ export class Enquires implements OnInit {
         select.value = enquiry.status || 'Pending';
       }
     });
+  }
+
+  exportToCsv() {
+    const headers = ['ID', 'Full Name', 'Email', 'Mobile', 'Service', 'Subject', 'Status', 'Date'];
+    const rows = this.filteredList.map(e => [
+      e.id,
+      `"${(e.fullName || '').replace(/"/g, '""')}"`,
+      `"${(e.email || '').replace(/"/g, '""')}"`,
+      e.mobile || '',
+      `"${(e.serviceName || '').replace(/"/g, '""')}"`,
+      `"${(e.subject || '').replace(/"/g, '""')}"`,
+      e.status || 'Pending',
+      e.createdate ? new Date(e.createdate).toLocaleDateString() : ''
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `enquiries_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    this.toast.success(`Exported ${this.filteredList.length} enquiries to CSV`);
   }
 
   deleteEnquire(id: number) {

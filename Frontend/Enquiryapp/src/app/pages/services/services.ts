@@ -23,6 +23,9 @@ export class Services implements OnInit {
 
   get totalCount():  number { return this.servicesList.length; }
   get activeCount(): number { return this.servicesList.filter(s => s.isActive).length; }
+  get adminUsername(): string { return this.auth.getUsername() || 'Admin'; }
+  get adminInitial(): string  { return this.adminUsername.charAt(0).toUpperCase(); }
+
 
   constructor(private api: Api, private auth: AuthService, private router: Router, private toast: ToastService) {}
 
