@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../services/toast.service';
+import { Service } from '../../models/interfaces';
 
 @Component({
   selector: 'app-new-enquiry',
@@ -12,7 +13,9 @@ import { ToastService } from '../../services/toast.service';
   styleUrl: './new-enquiry.css',
 })
 export class NewEnquiry implements OnInit {
-  servicesList: any[] = [];
+  private destroyRef = inject(DestroyRef);
+
+  servicesList: Service[] = [];
   isLoading = false;
   isSubmitting = false;
 
@@ -30,21 +33,22 @@ export class NewEnquiry implements OnInit {
   ngOnInit() { this.loadServices(); }
 
   get isAdmin(): boolean {
-    return !!localStorage.getItem('token') && localStorage.getItem('role') === 'Admin';
+    return this.auth.isAdmin();
   }
 
   loadServices() {
     this.isLoading = true;
-    this.api.getServices().subscribe({
+    const sub = this.api.getServices().subscribe({
       next: (data) => { this.servicesList = data; this.isLoading = false; },
       error: () => { this.isLoading = false; }
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   submitEnquiry() {
     if (this.isAdmin) return;
     this.isSubmitting = true;
-    this.api.addNewEnquiry(this.formData).subscribe({
+    const sub = this.api.addNewEnquiry(this.formData).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.toast.success('Enquiry submitted successfully! We will contact you shortly.');
@@ -55,6 +59,7 @@ export class NewEnquiry implements OnInit {
         this.toast.error('Failed to submit enquiry. Please try again.');
       }
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   scrollToTop() {

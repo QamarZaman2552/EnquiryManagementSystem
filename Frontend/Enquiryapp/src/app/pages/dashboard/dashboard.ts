@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../services/toast.service';
+import { Enquiry, Service } from '../../models/interfaces';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,8 +13,10 @@ import { ToastService } from '../../services/toast.service';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  enquiriesList: any[] = [];
-  servicesList: any[] = [];
+  private destroyRef = inject(DestroyRef);
+
+  enquiriesList: Enquiry[] = [];
+  servicesList: Service[] = [];
   isLoading = false;
 
   get adminUsername(): string { return this.auth.getUsername() || 'Admin'; }
@@ -32,10 +35,10 @@ export class Dashboard implements OnInit {
 
   loadData(): void {
     this.isLoading = true;
-    this.api.getEnquiresWithNames().subscribe({
+    const sub1 = this.api.getEnquiresWithNames().subscribe({
       next: (enquiries) => {
         this.enquiriesList = enquiries;
-        this.api.getServices().subscribe({
+        const sub2 = this.api.getServices().subscribe({
           next: (services) => {
             this.servicesList = services;
             this.isLoading = false;
@@ -45,12 +48,14 @@ export class Dashboard implements OnInit {
             this.toast.error('Failed to load services.');
           }
         });
+        this.destroyRef.onDestroy(() => sub2.unsubscribe());
       },
       error: () => {
         this.isLoading = false;
         this.toast.error('Failed to load enquiries.');
       }
     });
+    this.destroyRef.onDestroy(() => sub1.unsubscribe());
   }
 
   get totalEnquiries(): number {
@@ -77,8 +82,7 @@ export class Dashboard implements OnInit {
     return this.servicesList.length;
   }
 
-  get recentEnquiries(): any[] {
-    // Sort by date descending and take top 5
+  get recentEnquiries(): Enquiry[] {
     return [...this.enquiriesList]
       .sort((a, b) => new Date(b.createdate).getTime() - new Date(a.createdate).getTime())
       .slice(0, 5);

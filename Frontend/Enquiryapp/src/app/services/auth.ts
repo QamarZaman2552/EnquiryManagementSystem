@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable, tap } from 'rxjs';
+import { LoginResponse } from '../models/interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -9,9 +10,9 @@ export class AuthService {
 
     constructor(private http: HttpClient) { }
 
-    login(username: string, password: string): Observable<any> {
-        return this.http.post(`${this.baseUrl}/Auth/login`, { username, password }).pipe(
-            tap((res: any) => {
+    login(username: string, password: string): Observable<LoginResponse> {
+        return this.http.post<LoginResponse>(`${this.baseUrl}/Auth/login`, { username, password }).pipe(
+            tap((res) => {
                 localStorage.setItem('token', res.token);
                 localStorage.setItem('username', res.username);
                 localStorage.setItem('role', res.role);
@@ -27,6 +28,10 @@ export class AuthService {
 
     isLoggedIn(): boolean {
         return !!localStorage.getItem('token');
+    }
+
+    isAdmin(): boolean {
+        return this.isLoggedIn() && localStorage.getItem('role') === 'Admin';
     }
 
     getToken(): string | null {

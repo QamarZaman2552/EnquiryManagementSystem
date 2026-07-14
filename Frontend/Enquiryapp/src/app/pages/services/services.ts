@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../services/toast.service';
+import { Service } from '../../models/interfaces';
 
 @Component({
   selector: 'app-services',
@@ -13,19 +14,20 @@ import { ToastService } from '../../services/toast.service';
   styleUrl: './services.css',
 })
 export class Services implements OnInit {
-  servicesList: any[] = [];
+  private destroyRef = inject(DestroyRef);
+
+  servicesList: Service[] = [];
   isLoading = false;
   isSaving = false;
 
   newService = { serviceName: '', rate: 0, isActive: true };
   showEditModal = false;
-  editService: any = { serviceId: 0, serviceName: '', rate: 0, isActive: true };
+  editService: Partial<Service> & { serviceId: number } = { serviceId: 0, serviceName: '', rate: 0, isActive: true };
 
   get totalCount():  number { return this.servicesList.length; }
   get activeCount(): number { return this.servicesList.filter(s => s.isActive).length; }
   get adminUsername(): string { return this.auth.getUsername() || 'Admin'; }
   get adminInitial(): string  { return this.adminUsername.charAt(0).toUpperCase(); }
-
 
   constructor(private api: Api, private auth: AuthService, private router: Router, private toast: ToastService) {}
 
@@ -33,15 +35,16 @@ export class Services implements OnInit {
 
   loadService() {
     this.isLoading = true;
-    this.api.getServices().subscribe({
+    const sub = this.api.getServices().subscribe({
       next: (data) => { this.servicesList = data; this.isLoading = false; },
       error: () => { this.isLoading = false; this.toast.error('Failed to load services.'); }
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   addServices() {
     this.isSaving = true;
-    this.api.addNewServices(this.newService).subscribe({
+    const sub = this.api.addNewServices(this.newService).subscribe({
       next: () => {
         this.isSaving = false;
         this.toast.success('Service added successfully!');
@@ -50,14 +53,15 @@ export class Services implements OnInit {
       },
       error: () => { this.isSaving = false; this.toast.error('Failed to add service.'); }
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
-  openEditModal(s: any)  { this.editService = { ...s }; this.showEditModal = true; }
+  openEditModal(s: Service)  { this.editService = { ...s }; this.showEditModal = true; }
   closeEditModal()        { this.showEditModal = false; }
 
   updateService() {
     this.isSaving = true;
-    this.api.updateService(this.editService.serviceId, this.editService).subscribe({
+    const sub = this.api.updateService(this.editService.serviceId, this.editService).subscribe({
       next: () => {
         this.isSaving = false;
         this.toast.success('Service updated successfully!');
@@ -66,22 +70,25 @@ export class Services implements OnInit {
       },
       error: () => { this.isSaving = false; this.toast.error('Failed to update service.'); }
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
-  toggleStatus(s: any) {
+  toggleStatus(s: Service) {
     const updated = { ...s, isActive: !s.isActive };
-    this.api.updateService(s.serviceId, updated).subscribe({
+    const sub = this.api.updateService(s.serviceId, updated).subscribe({
       next: () => { s.isActive = !s.isActive; this.toast.success(`Service ${s.isActive ? 'activated' : 'deactivated'}.`); },
       error: () => this.toast.error('Failed to update status.')
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   deleteService(id: number) {
     if (!confirm('Are you sure you want to delete this service?')) return;
-    this.api.deleteService(id).subscribe({
+    const sub = this.api.deleteService(id).subscribe({
       next: () => { this.toast.success('Service deleted.'); this.loadService(); },
       error: () => this.toast.error('Failed to delete service.')
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   logout() { this.auth.logout(); this.router.navigate(['/login']); }

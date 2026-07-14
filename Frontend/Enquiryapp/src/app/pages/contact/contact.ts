@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
+import { Api } from '../../services/api';
+import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth';
+import { ContactFormData } from '../../models/interfaces';
 
 @Component({
   selector: 'app-contact',
@@ -9,11 +13,13 @@ import { FormsModule, NgForm } from '@angular/forms';
   styleUrl: './contact.css',
 })
 export class Contact {
+  private destroyRef = inject(DestroyRef);
+
   isSending = false;
   submitted = false;
   hasError = false;
 
-  formData = {
+  formData: ContactFormData = {
     fullName: '',
     email: '',
     phone: '',
@@ -21,8 +27,14 @@ export class Contact {
     message: '',
   };
 
+  constructor(
+    private api: Api,
+    private toast: ToastService,
+    public auth: AuthService
+  ) {}
+
   get isAdmin(): boolean {
-    return !!localStorage.getItem('token') && localStorage.getItem('role') === 'Admin';
+    return this.auth.isAdmin();
   }
 
   sendMessage(form: NgForm): void {
@@ -31,13 +43,22 @@ export class Contact {
     this.submitted = false;
     this.hasError = false;
 
-    // Simulate sending (replace with real API call when backend endpoint is ready)
-    setTimeout(() => {
-      this.isSending = false;
-      this.submitted = true;
-      this.formData = { fullName: '', email: '', phone: '', subject: '', message: '' };
-      form.resetForm();
-    }, 1500);
+    const sub = this.api.sendContactMessage(this.formData).subscribe({
+      next: () => {
+        this.isSending = false;
+        this.submitted = true;
+        this.formData = { fullName: '', email: '', phone: '', subject: '', message: '' };
+        form.resetForm();
+        this.toast.success('Message sent successfully!');
+      },
+      error: () => {
+        this.isSending = false;
+        this.hasError = true;
+        this.toast.error('Failed to send message. Please try again.');
+      }
+    });
+
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   resetForm(form: NgForm): void {

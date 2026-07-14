@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
+import { Service, Enquiry, ContactFormData } from '../models/interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -10,38 +11,41 @@ export class Api {
     constructor(private http: HttpClient) { }
 
     // ── SERVICES ──────────────────────────────────────────────
-    // GET all services
-    getServices(): Observable<any[]> {
-        return this.http.get<any[]>(`${this.baseUrl}/service`);
+    getServices(): Observable<Service[]> {
+        return this.http.get<Service[]>(`${this.baseUrl}/service`);
     }
-    // POST add new service
-    addNewServices(data: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}/service`, data);
+
+    addNewServices(data: Partial<Service>): Observable<Service> {
+        return this.http.post<Service>(`${this.baseUrl}/service`, data);
     }
-    // DELETE service by id
-    deleteService(id: number): Observable<any> {
-        return this.http.delete(`${this.baseUrl}/service/${id}`);
+
+    deleteService(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/service/${id}`);
     }
-    // PUT update service by id
-    updateService(id: number, data: any): Observable<any> {
-        return this.http.put(`${this.baseUrl}/service/${id}`, data);
+
+    updateService(id: number, data: Partial<Service>): Observable<void> {
+        return this.http.put<void>(`${this.baseUrl}/service/${id}`, data);
     }
 
     // ── ENQUIRIES ─────────────────────────────────────────────
-    // GET all enquiries (with service name via LINQ JOIN)
-    getEnquiresWithNames(): Observable<any[]> {
-        return this.http.get<any[]>(`${this.baseUrl}/Enquiry`);
+    getEnquiresWithNames(): Observable<Enquiry[]> {
+        return this.http.get<Enquiry[]>(`${this.baseUrl}/Enquiry`);
     }
-    // POST submit new enquiry
-    addNewEnquiry(data: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}/Enquiry`, data);
+
+    addNewEnquiry(data: Record<string, unknown>): Observable<Enquiry> {
+        return this.http.post<Enquiry>(`${this.baseUrl}/Enquiry`, data);
     }
-    // DELETE enquiry by id
-    deleteEnquiry(id: number): Observable<any> {
-        return this.http.delete(`${this.baseUrl}/Enquiry/${id}`);
+
+    deleteEnquiry(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/Enquiry/${id}`);
     }
-    // PATCH update enquiry status
-    updateStatus(id: number, status: string): Observable<any> {
-        return this.http.patch(`${this.baseUrl}/Enquiry/status/${id}`, { status });
+
+    updateStatus(id: number, status: string): Observable<{ status: string }> {
+        return this.http.patch<{ status: string }>(`${this.baseUrl}/Enquiry/status/${id}`, { status });
+    }
+
+    // ── CONTACT ───────────────────────────────────────────────
+    sendContactMessage(data: ContactFormData): Observable<{ message: string }> {
+        return this.http.post<{ message: string }>(`${this.baseUrl}/Contact`, data);
     }
 }

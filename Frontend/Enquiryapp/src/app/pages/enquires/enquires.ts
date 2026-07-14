@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../services/toast.service';
+import { Enquiry } from '../../models/interfaces';
 
 @Component({
   selector: 'app-enquires',
@@ -13,8 +14,10 @@ import { ToastService } from '../../services/toast.service';
   styleUrl: './enquires.css',
 })
 export class Enquires implements OnInit {
-  enquiresList: any[] = [];
-  selectedEnquiry: any = null;
+  private destroyRef = inject(DestroyRef);
+
+  enquiresList: Enquiry[] = [];
+  selectedEnquiry: Enquiry | null = null;
   isLoading = false;
   searchTerm = '';
   filterStatus = '';
@@ -27,7 +30,7 @@ export class Enquires implements OnInit {
     return this.adminUsername.charAt(0).toUpperCase();
   }
 
-  get filteredList(): any[] {
+  get filteredList(): Enquiry[] {
     return this.enquiresList.filter(e => {
       const matchSearch = !this.searchTerm ||
         (e.fullName || '').toLowerCase().includes(this.searchTerm.toLowerCase()) ||
@@ -48,13 +51,14 @@ export class Enquires implements OnInit {
 
   loadsEnquires() {
     this.isLoading = true;
-    this.api.getEnquiresWithNames().subscribe({
+    const sub = this.api.getEnquiresWithNames().subscribe({
       next: (data) => { this.enquiresList = data; this.isLoading = false; },
       error: () => { this.isLoading = false; this.toast.error('Failed to load enquiries.'); }
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
-  viewEnquiry(enquiry: any)  { this.selectedEnquiry = enquiry; }
+  viewEnquiry(enquiry: Enquiry)  { this.selectedEnquiry = enquiry; }
   closeEnquiry()             { this.selectedEnquiry = null; }
 
   getStatusClass(status: string): string {
@@ -66,11 +70,11 @@ export class Enquires implements OnInit {
     }
   }
 
-  onStatusChange(enquiry: any, event: Event) {
+  onStatusChange(enquiry: Enquiry, event: Event) {
     const select = event.target as HTMLSelectElement;
     const newStatus = select.value;
-    
-    this.api.updateStatus(enquiry.id, newStatus).subscribe({
+
+    const sub = this.api.updateStatus(enquiry.id, newStatus).subscribe({
       next: () => {
         enquiry.status = newStatus;
         this.toast.success(`Status updated to ${newStatus}`);
@@ -80,6 +84,7 @@ export class Enquires implements OnInit {
         select.value = enquiry.status || 'Pending';
       }
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   exportToCsv() {
@@ -107,10 +112,11 @@ export class Enquires implements OnInit {
 
   deleteEnquire(id: number) {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
-    this.api.deleteEnquiry(id).subscribe({
+    const sub = this.api.deleteEnquiry(id).subscribe({
       next: () => { this.toast.success('Enquiry deleted.'); this.loadsEnquires(); },
       error: () => this.toast.error('Failed to delete enquiry.')
     });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   logout() { this.auth.logout(); this.router.navigate(['/login']); }
