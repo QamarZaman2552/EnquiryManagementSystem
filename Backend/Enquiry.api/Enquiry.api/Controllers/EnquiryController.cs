@@ -162,15 +162,30 @@ public class EnquiryController : ControllerBase
 
 public class EnquiryDto
 {
-    public string fullName { get; set; }
-    public string email { get; set; }
-    public string mobile { get; set; }
-    public string subject { get; set; }
-    public string message { get; set; }
+    [Required(ErrorMessage = "Full name is required")]
+    [StringLength(100)]
+    public string fullName { get; set; } = string.Empty;
+
+    [EmailAddress(ErrorMessage = "Invalid email address")]
+    [StringLength(200)]
+    public string email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Mobile number is required")]
+    [StringLength(20)]
+    public string mobile { get; set; } = string.Empty;
+
+    [StringLength(200)]
+    public string subject { get; set; } = string.Empty;
+
+    [StringLength(2000)]
+    public string message { get; set; } = string.Empty;
+
+    [Range(1, int.MaxValue, ErrorMessage = "Please select a valid service")]
     public int serviceId { get; set; }
 }
 
 public class StatusUpdateDto
 {
+    [Required(ErrorMessage = "Status is required")]
     public string Status { get; set; } = string.Empty;
 }

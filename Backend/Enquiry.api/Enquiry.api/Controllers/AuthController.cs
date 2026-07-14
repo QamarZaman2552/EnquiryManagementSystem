@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Enquiry.api.Models;
 
@@ -24,11 +23,12 @@ namespace Enquiry.api.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDto dto)
         {
-            var passwordHash = ComputeSha256(dto.Password);
-            var user = _context.Users.FirstOrDefault(
-                u => u.Username == dto.Username && u.PasswordHash == passwordHash);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (user == null)
+            var user = _context.Users.FirstOrDefault(u => u.Username == dto.Username);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 return Unauthorized(new { message = "Invalid username or password" });
 
             var token = GenerateJwtToken(user);
@@ -57,17 +57,14 @@ namespace Enquiry.api.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-        private static string ComputeSha256(string input)
-        {
-            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
-            return Convert.ToHexStringLower(bytes);
-        }
     }
 
     public class LoginDto
     {
+        [Required(ErrorMessage = "Username is required")]
         public string Username { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; } = string.Empty;
     }
 }

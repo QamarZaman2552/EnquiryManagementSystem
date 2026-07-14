@@ -16,12 +16,12 @@ namespace Enquiry.api.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            // Seed default admin user (password: admin123, hashed with SHA256)
+            // Seed default admin user (password: admin123, hashed with BCrypt)
             modelBuilder.Entity<User>().HasData(new User
             {
                 UserId = 1,
                 Username = "admin",
-                PasswordHash = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9", // SHA256 of admin123
+                PasswordHash = "$2a$11$bTOrJpAibsvXQDUtE.CGv.2FxLB.1PejP01dlb23kn3yDPcRVX8NO",
                 Role = "Admin"
             });
         }
