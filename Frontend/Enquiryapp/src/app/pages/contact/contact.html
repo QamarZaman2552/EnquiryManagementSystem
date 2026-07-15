@@ -64,7 +64,12 @@
           <div class="contact-info-icon"><i class="bi bi-envelope-fill"></i></div>
           <h5 class="contact-info-title">Email Address</h5>
           <p class="contact-info-text">Drop us an email anytime.<br />We respond within 24 hours.</p>
-          <a href="mailto:support@enquirypro.com" class="contact-info-link">support&#64;enquirypro.com</a>
+          <div class="contact-info-value-row">
+            <a href="mailto:support@enquirypro.com" class="contact-info-link">support&#64;enquirypro.com</a>
+            <button type="button" class="btn-copy" (click)="copyToClipboard('support@enquirypro.com', 'Email')" title="Copy email">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </div>
         </div>
       </div>
       <div class="col-md-4">
@@ -72,7 +77,12 @@
           <div class="contact-info-icon"><i class="bi bi-telephone-fill"></i></div>
           <h5 class="contact-info-title">Phone Number</h5>
           <p class="contact-info-text">Speak to our support team<br />Mon–Sat, 9am–6pm PKT.</p>
-          <a href="tel:+923000000000" class="contact-info-link">+92-300-0000000</a>
+          <div class="contact-info-value-row">
+            <a href="tel:+923000000000" class="contact-info-link">+92-300-0000000</a>
+            <button type="button" class="btn-copy" (click)="copyToClipboard('+92-300-0000000', 'Phone')" title="Copy phone">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </div>
         </div>
       </div>
       <div class="col-md-4">

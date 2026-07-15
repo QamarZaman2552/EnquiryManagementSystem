@@ -68,6 +68,12 @@ export class Contact {
     this.hasError = false;
   }
 
+  copyToClipboard(text: string, label: string): void {
+    navigator.clipboard.writeText(text).then(() => {
+      this.toast.success(`${label} copied to clipboard!`);
+    });
+  }
+
   scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
