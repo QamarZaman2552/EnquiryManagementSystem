@@ -23,7 +23,7 @@ export const routes: Routes = [
   {
     path: 'admin/enquiries',
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/enquires/enquires').then(m => m.Enquires)
+    loadComponent: () => import('./pages/enquiries/enquiries').then(m => m.Enquiries)
   },
   {
     path: 'admin/services',

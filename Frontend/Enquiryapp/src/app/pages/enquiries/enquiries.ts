@@ -8,15 +8,15 @@ import { ToastService } from '../../services/toast.service';
 import { Enquiry } from '../../models/interfaces';
 
 @Component({
-  selector: 'app-enquires',
+  selector: 'app-enquiries',
   imports: [CommonModule, FormsModule],
-  templateUrl: './enquires.html',
-  styleUrl: './enquires.css',
+  templateUrl: './enquiries.html',
+  styleUrl: './enquiries.css',
 })
-export class Enquires implements OnInit {
+export class Enquiries implements OnInit {
   private destroyRef = inject(DestroyRef);
 
-  enquiresList: Enquiry[] = [];
+  enquiriesList: Enquiry[] = [];
   selectedEnquiry: Enquiry | null = null;
   isLoading = false;
   searchTerm = '';
@@ -31,7 +31,7 @@ export class Enquires implements OnInit {
   }
 
   get filteredList(): Enquiry[] {
-    return this.enquiresList.filter(e => {
+    return this.enquiriesList.filter(e => {
       const matchSearch = !this.searchTerm ||
         (e.fullName || '').toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         (e.email || '').toLowerCase().includes(this.searchTerm.toLowerCase()) ||
@@ -42,17 +42,17 @@ export class Enquires implements OnInit {
     });
   }
 
-  get pendingCount():  number { return this.enquiresList.filter(e => !e.status || e.status === 'Pending').length; }
-  get resolvedCount(): number { return this.enquiresList.filter(e => e.status === 'Resolved').length; }
+  get pendingCount():  number { return this.enquiriesList.filter(e => !e.status || e.status === 'Pending').length; }
+  get resolvedCount(): number { return this.enquiriesList.filter(e => e.status === 'Resolved').length; }
 
   constructor(private api: Api, private auth: AuthService, private router: Router, private toast: ToastService) {}
 
-  ngOnInit() { this.loadsEnquires(); }
+  ngOnInit() { this.loadEnquiries(); }
 
-  loadsEnquires() {
+  loadEnquiries() {
     this.isLoading = true;
-    const sub = this.api.getEnquiresWithNames().subscribe({
-      next: (data) => { this.enquiresList = data; this.isLoading = false; },
+    const sub = this.api.getEnquiries(1, 500).subscribe({
+      next: (response) => { this.enquiriesList = response.data; this.isLoading = false; },
       error: () => { this.isLoading = false; this.toast.error('Failed to load enquiries.'); }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
@@ -110,10 +110,10 @@ export class Enquires implements OnInit {
     this.toast.success(`Exported ${this.filteredList.length} enquiries to CSV`);
   }
 
-  deleteEnquire(id: number) {
+  deleteEnquiry(id: number) {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
     const sub = this.api.deleteEnquiry(id).subscribe({
-      next: () => { this.toast.success('Enquiry deleted.'); this.loadsEnquires(); },
+      next: () => { this.toast.success('Enquiry deleted.'); this.loadEnquiries(); },
       error: () => this.toast.error('Failed to delete enquiry.')
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());

@@ -38,8 +38,8 @@ export class Dashboard implements OnInit {
     let loaded = 0;
     const checkDone = () => { loaded++; if (loaded === 2) this.isLoading = false; };
 
-    const sub1 = this.api.getEnquiresWithNames().subscribe({
-      next: (enquiries) => { this.enquiriesList = enquiries; checkDone(); },
+    const sub1 = this.api.getEnquiries(1, 100).subscribe({
+      next: (response) => { this.enquiriesList = response.data; checkDone(); },
       error: () => { this.toast.error('Failed to load enquiries.'); checkDone(); }
     });
 

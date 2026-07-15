@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Enquiry.api.Models;
 using System.ComponentModel.DataAnnotations;
@@ -38,6 +40,7 @@ namespace Enquiry.api.Controllers
             return Ok(new { message = "Message sent successfully" });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ContactMessage>>> GetAll()
         {

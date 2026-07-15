@@ -14,12 +14,24 @@ public class EnquiryController : ControllerBase
         _context = context;
      }
 
-    // GET: api/EnquiryMaster  (public - users don't need auth)
+    // GET: api/EnquiryMaster  (Admin only - requires auth)
+    [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<object>>> GetEnquiryMaster()
+    public async Task<ActionResult<object>> GetEnquiryMaster(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        var enquiries = await _context.EnquiryMasters
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var query = _context.EnquiryMasters
             .Include(e => e.Service)
+            .OrderByDescending(e => e.EnquiryDate);
+
+        var total = await query.CountAsync();
+        var enquiries = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(e => new
             {
                 id = e.EnquiryId,
@@ -35,7 +47,14 @@ public class EnquiryController : ControllerBase
             })
             .ToListAsync();
 
-        return Ok(enquiries);
+        return Ok(new
+        {
+            data = enquiries,
+            total,
+            page,
+            pageSize,
+            totalPages = (int)Math.Ceiling(total / (double)pageSize)
+        });
     }
 
     // GET: api/EnquiryMaster/5  (Admin only)

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
-import { Service, Enquiry, ContactFormData } from '../models/interfaces';
+import { Service, Enquiry, ContactFormData, PaginatedResponse } from '../models/interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -28,8 +28,8 @@ export class Api {
     }
 
     // ── ENQUIRIES ─────────────────────────────────────────────
-    getEnquiresWithNames(): Observable<Enquiry[]> {
-        return this.http.get<Enquiry[]>(`${this.baseUrl}/Enquiry`);
+    getEnquiries(page = 1, pageSize = 50): Observable<PaginatedResponse<Enquiry>> {
+        return this.http.get<PaginatedResponse<Enquiry>>(`${this.baseUrl}/Enquiry?page=${page}&pageSize=${pageSize}`);
     }
 
     addNewEnquiry(data: Record<string, unknown>): Observable<Enquiry> {

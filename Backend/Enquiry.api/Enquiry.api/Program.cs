@@ -1,30 +1,38 @@
 using Enquiry.api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Serilog;
 using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Resolve secrets from environment variables (fallback to appsettings) ──
-var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? builder.Configuration["Jwt:Key"];
+// ── Serilog ──
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/enquiry-.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+builder.Host.UseSerilog();
+
+// ── Secrets ──
+var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
+    ?? throw new InvalidOperationException("JWT_KEY environment variable is not set.");
 var dbConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                         ?? builder.Configuration.GetConnectionString("dbcs");
+    ?? builder.Configuration.GetConnectionString("dbcs")
+    ?? throw new InvalidOperationException("DB_CONNECTION_STRING is not configured.");
 var corsOrigin = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGIN")
-                 ?? builder.Configuration["Cors:AllowedOrigin"]
-                 ?? "http://localhost:4200";
-
-if (string.IsNullOrWhiteSpace(jwtKey))
-    throw new InvalidOperationException("JWT signing key is not configured. Set JWT_KEY environment variable or Jwt:Key in appsettings.");
-
-if (string.IsNullOrWhiteSpace(dbConnectionString))
-    throw new InvalidOperationException("Database connection string is not configured. Set DB_CONNECTION_STRING environment variable or ConnectionStrings:dbcs in appsettings.");
+    ?? builder.Configuration["Cors:AllowedOrigin"]
+    ?? "http://localhost:4200";
 
 // ── CORS ──
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngular", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(corsOrigin)
               .AllowAnyHeader()
@@ -34,8 +42,33 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+// ── Database ──
 builder.Services.AddDbContext<EnquiryDbContext>(options =>
     options.UseSqlServer(dbConnectionString));
+
+// ── Health Checks ──
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<EnquiryDbContext>();
+
+// ── Rate Limiting ──
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+    options.AddFixedWindowLimiter("Login", opt =>
+    {
+        opt.PermitLimit = 5;
+        opt.Window = TimeSpan.FromMinutes(1);
+    });
+});
 
 // ── JWT Authentication ──
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -49,14 +82,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey!))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 
 var app = builder.Build();
 
-// ── Global Exception Handler ──
+// ── Security Headers ──
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["X-XSS-Protection"] = "0";
+    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+    context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:;";
+    await next();
+});
+
+app.UseSerilogRequestLogging();
+
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -66,6 +111,7 @@ app.UseExceptionHandler(errorApp =>
         var error = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
         if (error != null)
         {
+            Log.Error(error.Error, "Unhandled exception");
             await context.Response.WriteAsJsonAsync(new
             {
                 message = "An unexpected error occurred. Please try again later.",
@@ -75,29 +121,25 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-// Run EF migrations automatically on startup
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<EnquiryDbContext>();
-    db.Database.Migrate();
-}
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
 
-app.UseCors("AllowAngular");
+app.UseCors("AllowFrontend");
+app.UseRateLimiter();
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
+    app.UseHsts();
 }
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();

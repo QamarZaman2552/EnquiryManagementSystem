@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -22,6 +23,7 @@ namespace Enquiry.api.Controllers
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("Login")]
         public IActionResult Login([FromBody] LoginDto dto)
         {
             if (!ModelState.IsValid)
@@ -38,8 +40,11 @@ namespace Enquiry.api.Controllers
 
         private string GenerateJwtToken(User user)
         {
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
+                ?? _config["Jwt:Key"]
+                ?? throw new InvalidOperationException("JWT_KEY is not configured.");
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+                Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
