@@ -35,27 +35,20 @@ export class Dashboard implements OnInit {
 
   loadData(): void {
     this.isLoading = true;
+    let loaded = 0;
+    const checkDone = () => { loaded++; if (loaded === 2) this.isLoading = false; };
+
     const sub1 = this.api.getEnquiresWithNames().subscribe({
-      next: (enquiries) => {
-        this.enquiriesList = enquiries;
-        const sub2 = this.api.getServices().subscribe({
-          next: (services) => {
-            this.servicesList = services;
-            this.isLoading = false;
-          },
-          error: () => {
-            this.isLoading = false;
-            this.toast.error('Failed to load services.');
-          }
-        });
-        this.destroyRef.onDestroy(() => sub2.unsubscribe());
-      },
-      error: () => {
-        this.isLoading = false;
-        this.toast.error('Failed to load enquiries.');
-      }
+      next: (enquiries) => { this.enquiriesList = enquiries; checkDone(); },
+      error: () => { this.toast.error('Failed to load enquiries.'); checkDone(); }
     });
-    this.destroyRef.onDestroy(() => sub1.unsubscribe());
+
+    const sub2 = this.api.getServices().subscribe({
+      next: (services) => { this.servicesList = services; checkDone(); },
+      error: () => { this.toast.error('Failed to load services.'); checkDone(); }
+    });
+
+    this.destroyRef.onDestroy(() => { sub1.unsubscribe(); sub2.unsubscribe(); });
   }
 
   get totalEnquiries(): number {
