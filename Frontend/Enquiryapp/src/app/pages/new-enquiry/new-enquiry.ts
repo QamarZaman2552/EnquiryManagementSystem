@@ -17,6 +17,7 @@ export class NewEnquiry implements OnInit {
 
   servicesList: Service[] = [];
   isLoading = false;
+  loadError = false;
   isSubmitting = false;
 
   formData = {
@@ -38,9 +39,10 @@ export class NewEnquiry implements OnInit {
 
   loadServices() {
     this.isLoading = true;
+    this.loadError = false;
     const sub = this.api.getServices().subscribe({
       next: (data) => { this.servicesList = data; this.isLoading = false; },
-      error: () => { this.isLoading = false; }
+      error: () => { this.isLoading = false; this.loadError = true; }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }

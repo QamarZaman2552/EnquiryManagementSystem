@@ -25,54 +25,22 @@
 
   <!-- ── HERO SECTION ── -->
   <section class="hero-section">
-    <div class="container position-relative">
-      <div class="row align-items-center g-4">
-        <div class="col-lg-7">
-          <div class="hero-badge"><i class="bi bi-stars me-1"></i>Trusted Service Platform</div>
-          <h1 class="hero-title">
-            Submit Your <span>Service Enquiry</span><br />with Ease
-          </h1>
-          <p class="hero-description">
-            Browse our range of professional services, fill out a quick enquiry form, and our team will connect with you
-            promptly.
-          </p>
-          <div class="d-flex gap-3 mt-4">
-            <a href="#enquiry-form" class="btn btn-primary btn-lg rounded-pill px-4">
-              <i class="bi bi-pencil-square me-2"></i>Submit Enquiry
-            </a>
-            <a href="#services" class="btn btn-outline-light btn-lg rounded-pill px-4">
-              <i class="bi bi-grid me-2"></i>View Services
-            </a>
-          </div>
-        </div>
-        <div class="col-lg-5">
-          <div class="row g-3">
-            <div class="col-6">
-              <div class="hero-stat">
-                <div class="stat-num">500+</div>
-                <div class="stat-label">Enquiries Handled</div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="hero-stat">
-                <div class="stat-num">20+</div>
-                <div class="stat-label">Services Available</div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="hero-stat">
-                <div class="stat-num">98%</div>
-                <div class="stat-label">Satisfaction Rate</div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="hero-stat">
-                <div class="stat-num">24h</div>
-                <div class="stat-label">Response Time</div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="container position-relative text-center">
+      <div class="hero-badge"><i class="bi bi-stars me-1"></i>Trusted Service Platform</div>
+      <h1 class="hero-title">
+        Submit Your <span>Service Enquiry</span><br />with Ease
+      </h1>
+      <p class="hero-description mx-auto">
+        Browse our range of professional services, fill out a quick enquiry form, and our team will connect with you
+        promptly.
+      </p>
+      <div class="d-flex gap-3 mt-4 justify-content-center">
+        <a href="#enquiry-form" class="btn btn-primary btn-lg rounded-pill px-4">
+          <i class="bi bi-pencil-square me-2"></i>Submit Enquiry
+        </a>
+        <a href="#services" class="btn btn-outline-light btn-lg rounded-pill px-4">
+          <i class="bi bi-grid me-2"></i>View Services
+        </a>
       </div>
     </div>
   </section>
@@ -90,8 +58,15 @@
             <span class="service-rate">PKR {{ s.rate | number:'1.0-2' }}</span>
           </div>
         </div>
-        <div class="col-12 text-center py-4 text-muted" *ngIf="servicesList.length === 0">
-          <i class="bi bi-hourglass-split me-2"></i>Loading services...
+        <div class="col-12 text-center py-4" *ngIf="isLoading">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div class="mt-2 text-muted">Loading services...</div>
+        </div>
+        <div class="col-12 text-center py-4 text-muted" *ngIf="!isLoading && loadError">
+          <i class="bi bi-exclamation-triangle me-2 text-warning"></i>Failed to load services. Please try again later.
+        </div>
+        <div class="col-12 text-center py-4 text-muted" *ngIf="!isLoading && !loadError && servicesList.length === 0">
+          <i class="bi bi-inbox me-2"></i>No services available at the moment.
         </div>
       </div>
     </div>
