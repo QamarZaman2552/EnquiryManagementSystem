@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  JWT_KEY: ${{ secrets.JWT_KEY || 'ci-test-key-that-is-at-least-32-characters-long-for-testing' }}
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: Test@123456
+          MSSQL_PID: Developer
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Test@123456 -C -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - run: dotnet restore Backend/Enquiry.Tests/Enquiry.Tests.csproj
+      - run: dotnet build Backend/Enquiry.Tests/Enquiry.Tests.csproj --configuration Release --no-restore
+      - run: dotnet test Backend/Enquiry.Tests/Enquiry.Tests.csproj --configuration Release --no-build --verbosity normal
+        env:
+          DB_CONNECTION_STRING: Server=localhost;Database=EnquiryDb_Test;User Id=sa;Password=Test@123456;TrustServerCertificate=True
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Frontend/Enquiryapp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: Frontend/Enquiryapp/package-lock.json
+      - run: npm ci
+      - run: npm run build --if-present

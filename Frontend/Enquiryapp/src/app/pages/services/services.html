@@ -1,241 +1,217 @@
-<!-- ═══ SIDEBAR ═══ -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-brand">
-    <div class="sidebar-brand-name"><i class="bi bi-headset me-2"></i>Enquiry<span>Pro</span></div>
-    <div class="sidebar-subtitle">Admin Management Panel</div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Main</div>
-    <a href="/admin/dashboard" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+<app-admin-layout activePage="services">
 
-    <div class="nav-section-label mt-2">Management</div>
-    <a href="/admin/enquiries" class="sidebar-link"><i class="bi bi-inbox"></i> All Enquiries</a>
-    <a href="/admin/services" class="sidebar-link active"><i class="bi bi-grid-1x2"></i> Services</a>
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <div class="main-content">
 
-    <div class="nav-section-label mt-2">System</div>
-    <a href="javascript:void(0)" (click)="logout()" class="sidebar-link"><i class="bi bi-box-arrow-left"></i> Logout</a>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="admin-badge">
-      <div class="admin-avatar">{{ adminInitial }}</div>
+    <!-- Top Header -->
+    <div class="top-header">
       <div>
-        <div class="admin-name">{{ adminUsername }}</div>
-        <div class="admin-role">System Administrator</div>
+        <div class="page-heading"><i class="bi bi-grid-1x2 me-2 text-primary"></i>Services Management</div>
+        <div class="breadcrumb-custom">Admin &rsaquo; Services</div>
       </div>
     </div>
-  </div>
-</aside>
 
-<!-- ═══ MAIN CONTENT ═══ -->
-<div class="main-content">
+    <div class="page-body">
+      <div class="row g-4">
 
-  <!-- Top Header -->
-  <div class="top-header">
-    <div>
-      <div class="page-heading"><i class="bi bi-grid-1x2 me-2 text-primary"></i>Services Management</div>
-      <div class="breadcrumb-custom">Admin &rsaquo; Services</div>
-    </div>
-  </div>
+        <!-- ── Left Column: Form + Stats ── -->
+        <div class="col-lg-4">
 
-  <div class="page-body">
-    <div class="row g-4">
+          <!-- Add New Service Form -->
+          <div class="add-form-card">
+            <div class="add-form-header">
+              <h2><i class="bi bi-plus-circle me-2"></i>Add New Service</h2>
+              <p>Fill in the details to add a new service.</p>
+            </div>
+            <div class="add-form-body">
+              <form #serviceForm="ngForm" (ngSubmit)="serviceForm.form.valid && addServices()" novalidate>
 
-      <!-- ── Left Column: Form + Stats ── -->
-      <div class="col-lg-4">
-
-        <!-- Add New Service Form -->
-        <div class="add-form-card">
-          <div class="add-form-header">
-            <h2><i class="bi bi-plus-circle me-2"></i>Add New Service</h2>
-            <p>Fill in the details to add a new service.</p>
-          </div>
-          <div class="add-form-body">
-            <form #serviceForm="ngForm" (ngSubmit)="serviceForm.form.valid && addServices()" novalidate>
-
-              <div class="mb-3">
-                <label for="serviceName" class="form-label">
-                  Service Name <span class="required-star">*</span>
-                </label>
-                <input type="text" class="form-control" id="serviceName" name="serviceName"
-                  placeholder="e.g. Web Development" required [(ngModel)]="newService.serviceName"
-                  #serviceNameInput="ngModel"
-                  [class.is-invalid]="serviceForm.submitted && serviceNameInput.invalid" />
-                <div class="invalid-feedback">Service name is required.</div>
-              </div>
-
-              <div class="mb-3">
-                <label for="serviceRate" class="form-label">
-                  Rate (PKR) <span class="required-star">*</span>
-                </label>
-                <div class="input-group">
-                  <span class="input-group-text bg-white border-end-0 input-group-currency-label">PKR</span>
-                  <input type="number" class="form-control border-start-0 input-group-rate-input" id="serviceRate" name="rate"
-                    placeholder="0.00" min="0" step="0.01" required
-                    [(ngModel)]="newService.rate" #serviceRateInput="ngModel"
-                    [class.is-invalid]="serviceForm.submitted && serviceRateInput.invalid" />
+                <div class="mb-3">
+                  <label for="serviceName" class="form-label">
+                    Service Name <span class="required-star">*</span>
+                  </label>
+                  <input type="text" class="form-control" id="serviceName" name="serviceName"
+                    placeholder="e.g. Web Development" required [(ngModel)]="newService.serviceName"
+                    #serviceNameInput="ngModel"
+                    [class.is-invalid]="serviceForm.submitted && serviceNameInput.invalid" />
+                  <div class="invalid-feedback">Service name is required.</div>
                 </div>
-                <div class="invalid-feedback">Please enter a valid rate.</div>
-              </div>
 
-              <div class="mb-4">
-                <label class="form-label">Status</label>
-                <div class="d-flex gap-3">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="isActive" id="statusActive"
-                      [value]="true" [(ngModel)]="newService.isActive" />
-                    <label class="form-check-label form-check-label-custom" for="statusActive">
-                      <i class="bi bi-check-circle text-success me-1"></i>Active
-                    </label>
+                <div class="mb-3">
+                  <label for="serviceRate" class="form-label">
+                    Rate (PKR) <span class="required-star">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 input-group-currency-label">PKR</span>
+                    <input type="number" class="form-control border-start-0 input-group-rate-input" id="serviceRate" name="rate"
+                      placeholder="0.00" min="0" step="0.01" required
+                      [(ngModel)]="newService.rate" #serviceRateInput="ngModel"
+                      [class.is-invalid]="serviceForm.submitted && serviceRateInput.invalid" />
                   </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="isActive" id="statusInactive"
-                      [value]="false" [(ngModel)]="newService.isActive" />
-                    <label class="form-check-label form-check-label-custom" for="statusInactive">
-                      <i class="bi bi-x-circle text-danger me-1"></i>Inactive
-                    </label>
+                  <div class="invalid-feedback">Please enter a valid rate.</div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Status</label>
+                  <div class="d-flex gap-3">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="isActive" id="statusActive"
+                        [value]="true" [(ngModel)]="newService.isActive" />
+                      <label class="form-check-label form-check-label-custom" for="statusActive">
+                        <i class="bi bi-check-circle text-success me-1"></i>Active
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="isActive" id="statusInactive"
+                        [value]="false" [(ngModel)]="newService.isActive" />
+                      <label class="form-check-label form-check-label-custom" for="statusInactive">
+                        <i class="bi bi-x-circle text-danger me-1"></i>Inactive
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-add-service flex-grow-1">
-                  <i class="bi bi-plus-lg me-1"></i>Add Service
-                </button>
-                <button type="button" class="btn btn-reset-form"
-                  (click)="serviceForm.resetForm({ isActive: true, rate: 0 })">
-                  <i class="bi bi-arrow-counterclockwise"></i>
-                </button>
-              </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-add-service flex-grow-1">
+                    <i class="bi bi-plus-lg me-1"></i>Add Service
+                  </button>
+                  <button type="button" class="btn btn-reset-form"
+                    (click)="serviceForm.resetForm({ isActive: true, rate: 0 })">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                  </button>
+                </div>
 
-            </form>
-          </div>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="row g-3 mt-2">
-          <div class="col-6">
-            <div class="bg-white rounded-3 border p-3 text-center stats-card-custom">
-              <div class="stats-val-custom">{{ totalCount }}</div>
-              <div class="stats-lbl-custom">Total Services</div>
+              </form>
             </div>
           </div>
-          <div class="col-6">
-            <div class="bg-white rounded-3 border p-3 text-center stats-card-custom">
-              <div class="stats-val-active">{{ activeCount }}</div>
-              <div class="stats-lbl-custom">Active Services</div>
+
+          <!-- Quick Stats -->
+          <div class="row g-3 mt-2">
+            <div class="col-6">
+              <div class="bg-white rounded-3 border p-3 text-center stats-card-custom">
+                <div class="stats-val-custom">{{ totalCount }}</div>
+                <div class="stats-lbl-custom">Total Services</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="bg-white rounded-3 border p-3 text-center stats-card-custom">
+                <div class="stats-val-active">{{ activeCount }}</div>
+                <div class="stats-lbl-custom">Active Services</div>
+              </div>
             </div>
           </div>
-        </div>
 
-      </div><!-- end col-lg-4 -->
+        </div><!-- end col-lg-4 -->
 
-      <!-- ── Right Column: Services Table ── -->
-      <div class="col-lg-8">
-        <div class="table-card">
-          <div class="table-card-header">
-            <span class="table-card-title">
-              <i class="bi bi-list-ul me-2 text-primary"></i>All Services
-            </span>
+        <!-- ── Right Column: Services Table ── -->
+        <div class="col-lg-8">
+          <div class="table-card">
+            <div class="table-card-header">
+              <span class="table-card-title">
+                <i class="bi bi-list-ul me-2 text-primary"></i>All Services
+              </span>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Service</th>
+                    <th>Rate (PKR)</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let s of servicesList; let i = index">
+                    <td class="text-muted">{{ i + 1 }}</td>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="service-icon-cell"><i class="bi bi-gear-fill"></i></div>
+                        <div class="service-name-cell">{{ s.serviceName }}</div>
+                      </div>
+                    </td>
+                    <td><strong>{{ s.rate }}</strong></td>
+                    <td>
+                      <span [class]="s.isActive ? 'badge-active' : 'badge-inactive'">
+                        {{ s.isActive ? 'Active' : 'Inactive' }}
+                      </span>
+                    </td>
+                    <td><span class="text-muted small">{{ s.createdate | date:'yyyy-MM-dd' }}</span></td>
+                    <td class="text-center">
+                      <div class="d-flex align-items-center justify-content-center gap-2">
+                        <button class="btn-action btn-edit" title="Edit" (click)="openEditModal(s)">
+                          <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn-action" [title]="s.isActive ? 'Set Inactive' : 'Set Active'"
+                          [class.btn-toggle-active]="s.isActive"
+                          [class.btn-toggle-inactive]="!s.isActive"
+                          (click)="toggleStatus(s)">
+                          <i [class]="s.isActive ? 'bi bi-toggle-on' : 'bi bi-toggle-off'"></i>
+                        </button>
+                        <button class="btn-action btn-delete" title="Delete" (click)="deleteService(s.serviceId)">
+                          <i class="bi bi-trash-fill"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="servicesList.length === 0">
+                    <td colspan="6" class="text-center py-4 text-muted">No services found.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Service</th>
-                  <th>Rate (PKR)</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                  <th class="text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let s of servicesList; let i = index">
-                  <td class="text-muted">{{ i + 1 }}</td>
-                  <td>
-                    <div class="d-flex align-items-center gap-2">
-                      <div class="service-icon-cell"><i class="bi bi-gear-fill"></i></div>
-                      <div class="service-name-cell">{{ s.serviceName }}</div>
-                    </div>
-                  </td>
-                  <td><strong>{{ s.rate }}</strong></td>
-                  <td>
-                    <span [class]="s.isActive ? 'badge-active' : 'badge-inactive'">
-                      {{ s.isActive ? 'Active' : 'Inactive' }}
-                    </span>
-                  </td>
-                  <td><span class="text-muted small">{{ s.createdate | date:'yyyy-MM-dd' }}</span></td>
-                  <td class="text-center">
-                    <div class="d-flex align-items-center justify-content-center gap-2">
-                      <button class="btn-action btn-edit" title="Edit" (click)="openEditModal(s)">
-                        <i class="bi bi-pencil-fill"></i>
-                      </button>
-                      <button class="btn-action" [title]="s.isActive ? 'Set Inactive' : 'Set Active'"
-                        [class.btn-toggle-active]="s.isActive"
-                        [class.btn-toggle-inactive]="!s.isActive"
-                        (click)="toggleStatus(s)">
-                        <i [class]="s.isActive ? 'bi bi-toggle-on' : 'bi bi-toggle-off'"></i>
-                      </button>
-                      <button class="btn-action btn-delete" title="Delete" (click)="deleteService(s.serviceId)">
-                        <i class="bi bi-trash-fill"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <tr *ngIf="servicesList.length === 0">
-                  <td colspan="6" class="text-center py-4 text-muted">No services found.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div><!-- end col-lg-8 -->
+        </div><!-- end col-lg-8 -->
 
-    </div>
-  </div>
-</div>
-
-<!-- ═══ EDIT SERVICE MODAL ═══ -->
-<div class="modal-backdrop-custom" *ngIf="showEditModal" (click)="closeEditModal()"></div>
-<div class="edit-modal" *ngIf="showEditModal">
-  <div class="edit-modal-header">
-    <h5><i class="bi bi-pencil-square me-2"></i>Edit Service</h5>
-    <button class="btn-close-modal" (click)="closeEditModal()"><i class="bi bi-x-lg"></i></button>
-  </div>
-  <div class="edit-modal-body">
-    <div class="mb-3">
-      <label class="form-label">Service Name <span class="required-star">*</span></label>
-      <input type="text" class="form-control" [(ngModel)]="editService.serviceName" placeholder="Service name" />
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Rate (PKR) <span class="required-star">*</span></label>
-      <div class="input-group">
-        <span class="input-group-text bg-white border-end-0 input-group-currency-label">PKR</span>
-        <input type="number" class="form-control border-start-0 input-group-rate-input" [(ngModel)]="editService.rate" min="0" />
       </div>
     </div>
-    <div class="mb-4">
-      <label class="form-label">Status</label>
-      <div class="d-flex gap-3">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="editIsActive" id="editStatusActive"
-            [value]="true" [(ngModel)]="editService.isActive" />
-          <label class="form-check-label form-check-label-custom" for="editStatusActive">
-            <i class="bi bi-check-circle text-success me-1"></i>Active
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="editIsActive" id="editStatusInactive"
-            [value]="false" [(ngModel)]="editService.isActive" />
-          <label class="form-check-label form-check-label-custom" for="editStatusInactive">
-            <i class="bi bi-x-circle text-danger me-1"></i>Inactive
-          </label>
+  </div>
+
+  <!-- ═══ EDIT SERVICE MODAL ═══ -->
+  <div class="modal-backdrop-custom" *ngIf="showEditModal" (click)="closeEditModal()"></div>
+  <div class="edit-modal" *ngIf="showEditModal">
+    <div class="edit-modal-header">
+      <h5><i class="bi bi-pencil-square me-2"></i>Edit Service</h5>
+      <button class="btn-close-modal" (click)="closeEditModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="edit-modal-body">
+      <div class="mb-3">
+        <label class="form-label">Service Name <span class="required-star">*</span></label>
+        <input type="text" class="form-control" [(ngModel)]="editService.serviceName" placeholder="Service name" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Rate (PKR) <span class="required-star">*</span></label>
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0 input-group-currency-label">PKR</span>
+          <input type="number" class="form-control border-start-0 input-group-rate-input" [(ngModel)]="editService.rate" min="0" />
         </div>
       </div>
-    </div>
-    <div class="d-flex gap-2 justify-content-end">
-      <button class="btn btn-reset-form" (click)="closeEditModal()">Cancel</button>
-      <button class="btn btn-add-service" (click)="updateService()"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
+      <div class="mb-4">
+        <label class="form-label">Status</label>
+        <div class="d-flex gap-3">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="editIsActive" id="editStatusActive"
+              [value]="true" [(ngModel)]="editService.isActive" />
+            <label class="form-check-label form-check-label-custom" for="editStatusActive">
+              <i class="bi bi-check-circle text-success me-1"></i>Active
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="editIsActive" id="editStatusInactive"
+              [value]="false" [(ngModel)]="editService.isActive" />
+            <label class="form-check-label form-check-label-custom" for="editStatusInactive">
+              <i class="bi bi-x-circle text-danger me-1"></i>Inactive
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex gap-2 justify-content-end">
+        <button class="btn btn-reset-form" (click)="closeEditModal()">Cancel</button>
+        <button class="btn btn-add-service" (click)="updateService()"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
+      </div>
     </div>
   </div>
-</div>
+
+</app-admin-layout>

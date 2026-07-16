@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../services/toast.service';
+import { AdminLayout } from '../admin-layout/admin-layout';
 import { Service } from '../../models/interfaces';
 
 @Component({
   selector: 'app-services',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AdminLayout],
   templateUrl: './services.html',
   styleUrl: './services.css',
 })
@@ -26,10 +26,8 @@ export class Services implements OnInit {
 
   get totalCount():  number { return this.servicesList.length; }
   get activeCount(): number { return this.servicesList.filter(s => s.isActive).length; }
-  get adminUsername(): string { return this.auth.getUsername() || 'Admin'; }
-  get adminInitial(): string  { return this.adminUsername.charAt(0).toUpperCase(); }
 
-  constructor(private api: Api, private auth: AuthService, private router: Router, private toast: ToastService) {}
+  constructor(private api: Api, private auth: AuthService, private toast: ToastService) {}
 
   ngOnInit() { this.loadService(); }
 
@@ -90,6 +88,4 @@ export class Services implements OnInit {
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
-
-  logout() { this.auth.logout(); this.router.navigate(['/login']); }
 }

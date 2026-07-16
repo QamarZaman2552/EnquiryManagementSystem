@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../services/toast.service';
+import { AdminLayout } from '../admin-layout/admin-layout';
 import { Enquiry, Service } from '../../models/interfaces';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, AdminLayout],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -19,13 +19,9 @@ export class Dashboard implements OnInit {
   servicesList: Service[] = [];
   isLoading = false;
 
-  get adminUsername(): string { return this.auth.getUsername() || 'Admin'; }
-  get adminInitial(): string  { return this.adminUsername.charAt(0).toUpperCase(); }
-
   constructor(
     private api: Api,
     private auth: AuthService,
-    private router: Router,
     private toast: ToastService
   ) {}
 
@@ -51,29 +47,12 @@ export class Dashboard implements OnInit {
     this.destroyRef.onDestroy(() => { sub1.unsubscribe(); sub2.unsubscribe(); });
   }
 
-  get totalEnquiries(): number {
-    return this.enquiriesList.length;
-  }
-
-  get pendingCount(): number {
-    return this.enquiriesList.filter(e => !e.status || e.status === 'Pending').length;
-  }
-
-  get inProgressCount(): number {
-    return this.enquiriesList.filter(e => e.status === 'In Progress').length;
-  }
-
-  get resolvedCount(): number {
-    return this.enquiriesList.filter(e => e.status === 'Resolved').length;
-  }
-
-  get closedCount(): number {
-    return this.enquiriesList.filter(e => e.status === 'Closed').length;
-  }
-
-  get totalServices(): number {
-    return this.servicesList.length;
-  }
+  get totalEnquiries(): number { return this.enquiriesList.length; }
+  get pendingCount(): number { return this.enquiriesList.filter(e => !e.status || e.status === 'Pending').length; }
+  get inProgressCount(): number { return this.enquiriesList.filter(e => e.status === 'In Progress').length; }
+  get resolvedCount(): number { return this.enquiriesList.filter(e => e.status === 'Resolved').length; }
+  get closedCount(): number { return this.enquiriesList.filter(e => e.status === 'Closed').length; }
+  get totalServices(): number { return this.servicesList.length; }
 
   get recentEnquiries(): Enquiry[] {
     return [...this.enquiriesList]
@@ -88,10 +67,5 @@ export class Dashboard implements OnInit {
       case 'Closed': return 'badge bg-secondary';
       default: return 'badge bg-warning text-dark';
     }
-  }
-
-  logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/login']);
   }
 }

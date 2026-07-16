@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Serilog;
 using System.Text;
@@ -36,7 +39,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(corsOrigin)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -50,6 +54,17 @@ builder.Services.AddDbContext<EnquiryDbContext>(options =>
 // ── Health Checks ──
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<EnquiryDbContext>();
+
+// ── OpenTelemetry ──
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("EnquiryProAPI"))
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddMeter("Microsoft.AspNetCore.Hosting", "Microsoft.AspNetCore.Server.Kestrel"))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation());
 
 // ── Rate Limiting ──
 builder.Services.AddRateLimiter(options =>
@@ -84,9 +99,46 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Cookies["access_token"];
+                if (!string.IsNullOrEmpty(token))
+                    context.Token = token;
+                return Task.CompletedTask;
+            }
+        };
     });
 
 var app = builder.Build();
+
+// ── CSRF Protection (check Origin header for state-changing methods) ──
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method is "POST" or "PUT" or "PATCH" or "DELETE" &&
+        !context.Request.Path.StartsWithSegments("/api/Auth/login") &&
+        !context.Request.Path.StartsWithSegments("/api/Auth/refresh"))
+    {
+        var origin = context.Request.Headers["Origin"].FirstOrDefault();
+        var allowed = corsOrigin;
+
+        if (string.IsNullOrEmpty(origin))
+        {
+            var referer = context.Request.Headers["Referer"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(referer) && Uri.TryCreate(referer, UriKind.Absolute, out var refUri))
+                origin = $"{refUri.Scheme}://{refUri.Host}:{refUri.Port}";
+        }
+
+        if (!string.IsNullOrEmpty(origin) && !string.Equals(origin, allowed, StringComparison.OrdinalIgnoreCase))
+        {
+            context.Response.StatusCode = 403;
+            await context.Response.WriteAsJsonAsync(new { message = "CSRF check failed" });
+            return;
+        }
+    }
+    await next();
+});
 
 // ── Security Headers ──
 app.Use(async (context, next) =>
@@ -143,3 +195,5 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 app.Run();
+
+public partial class Program { }

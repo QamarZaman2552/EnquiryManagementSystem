@@ -17,5 +17,11 @@ namespace Enquiry.api.Models
 
         [StringLength(20)]
         public string Role { get; set; } = "Admin";
+
+        public int FailedLoginAttempts { get; set; } = 0;
+
+        public DateTime? LockoutEnd { get; set; }
+
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

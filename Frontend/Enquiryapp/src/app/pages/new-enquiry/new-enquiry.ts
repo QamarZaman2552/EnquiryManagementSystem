@@ -15,6 +15,8 @@ import { Service } from '../../models/interfaces';
 export class NewEnquiry implements OnInit {
   private destroyRef = inject(DestroyRef);
 
+  currentYear = new Date().getFullYear();
+
   servicesList: Service[] = [];
   isLoading = false;
   loadError = false;

@@ -1,23 +1,30 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { AuthService } from './auth';
+import { catchError, switchMap, throwError } from 'rxjs';
+
+let isRefreshing = false;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router);
-  const token = localStorage.getItem('token');
+  const auth = inject(AuthService);
 
-  const cloned = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
+  const cloned = req.clone({ withCredentials: true });
 
   return next(cloned).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (err.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        localStorage.removeItem('role');
-        router.navigate(['/login']);
+      if (err.status === 401 && !isRefreshing && !req.url.includes('/Auth/refresh')) {
+        isRefreshing = true;
+        return auth.refreshToken().pipe(
+          switchMap(() => {
+            isRefreshing = false;
+            return next(cloned);
+          }),
+          catchError((refreshErr) => {
+            isRefreshing = false;
+            auth.clearSession();
+            return throwError(() => refreshErr);
+          })
+        );
       }
       return throwError(() => err);
     })

@@ -15,6 +15,8 @@ import { ContactFormData } from '../../models/interfaces';
 export class Contact {
   private destroyRef = inject(DestroyRef);
 
+  currentYear = new Date().getFullYear();
+
   isSending = false;
   submitted = false;
   hasError = false;

@@ -48,4 +48,13 @@ export class Api {
     sendContactMessage(data: ContactFormData): Observable<{ message: string }> {
         return this.http.post<{ message: string }>(`${this.baseUrl}/Contact`, data);
     }
+
+    // ── GDPR DATA ─────────────────────────────────────────────
+    requestDataExport(email: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/Data/export`, { email });
+    }
+
+    requestDataDeletion(email: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/Data/delete`, { email });
+    }
 }

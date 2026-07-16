@@ -1,0 +1,134 @@
+<!-- ═══ HERO / HEADER ═══ -->
+<section class="privacy-hero">
+  <div class="hero-blob"></div>
+  <div class="container py-5">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-8">
+        <div class="hero-icon"><i class="bi bi-shield-lock-fill"></i></div>
+        <h1 class="hero-title">Privacy Policy</h1>
+        <p class="hero-subtitle">
+          We take your privacy seriously. This policy explains how we collect, use, and protect your personal information.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="hero-wave"><svg viewBox="0 0 1440 60" preserveAspectRatio="none"><path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z"/></svg></div>
+</section>
+
+<!-- ═══ CONTENT ═══ -->
+<section class="privacy-content py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+
+        <div class="privacy-card">
+          <h2><i class="bi bi-info-circle me-2 text-primary"></i>Information We Collect</h2>
+          <p>When you submit an enquiry or contact form, we collect the following personal information:</p>
+          <ul>
+            <li><strong>Name</strong> &mdash; to address you properly</li>
+            <li><strong>Email address</strong> &mdash; to respond to your enquiries</li>
+            <li><strong>Phone number</strong> &mdash; to contact you if needed</li>
+            <li><strong>Message content</strong> &mdash; the details you share with us</li>
+          </ul>
+        </div>
+
+        <div class="privacy-card">
+          <h2><i class="bi bi-gear me-2 text-primary"></i>How We Use Your Information</h2>
+          <p>Your data is used solely for the following purposes:</p>
+          <ul>
+            <li>Responding to your enquiries and service requests</li>
+            <li>Improving our services based on feedback</li>
+            <li>Communicating with you about your enquiries</li>
+          </ul>
+          <p>We do <strong>not</strong> sell, rent, or share your personal data with third parties for marketing purposes.</p>
+        </div>
+
+        <div class="privacy-card">
+          <h2><i class="bi bi-clock-history me-2 text-primary"></i>Data Retention</h2>
+          <p>We retain your personal data only as long as necessary to fulfill the purposes outlined above, or as required by law. Enquiry records are typically retained for <strong>3 years</strong> after the last interaction.</p>
+        </div>
+
+        <div class="privacy-card">
+          <h2><i class="bi bi-shield-check me-2 text-primary"></i>Your Rights (GDPR)</h2>
+          <p>Under the General Data Protection Regulation, you have the following rights:</p>
+          <div class="row g-3 mt-2">
+            <div class="col-md-6">
+              <div class="right-card">
+                <i class="bi bi-download text-primary"></i>
+                <h6>Right to Access</h6>
+                <p>Request a copy of your personal data.</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="right-card">
+                <i class="bi bi-pencil-square text-success"></i>
+                <h6>Right to Rectification</h6>
+                <p>Request correction of inaccurate data.</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="right-card">
+                <i class="bi bi-trash text-danger"></i>
+                <h6>Right to Erasure</h6>
+                <p>Request deletion of your personal data.</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="right-card">
+                <i class="bi bi-box-arrow-right text-warning"></i>
+                <h6>Right to Data Portability</h6>
+                <p>Receive your data in a structured format.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-card">
+          <h2><i class="bi bi-envelope me-2 text-primary"></i>Request Your Data</h2>
+          <p>To request a copy of your data or request its deletion, enter the email address you used when submitting your enquiry:</p>
+          <div class="row g-3 mt-3">
+            <div class="col-md-8">
+              <input type="email" class="form-control form-control-lg" placeholder="Your email address" [(ngModel)]="email" />
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+              <button class="btn btn-primary btn-lg flex-grow-1" (click)="requestExport()" [disabled]="!email || isLoading">
+                <i class="bi bi-download me-1"></i>Export
+              </button>
+              <button class="btn btn-outline-danger btn-lg flex-grow-1" (click)="requestDeletion()" [disabled]="!email || isLoading">
+                <i class="bi bi-trash me-1"></i>Delete
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="exportResult" class="mt-4 p-3 bg-light rounded">
+            <h6><i class="bi bi-check-circle text-success me-1"></i>Data Export</h6>
+            <pre class="mb-0 small">{{ exportResult | json }}</pre>
+          </div>
+
+          <div *ngIf="isLoading" class="mt-3 text-center">
+            <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+            Processing your request...
+          </div>
+        </div>
+
+        <div class="privacy-card">
+          <h2><i class="bi bi-shield-exclamation me-2 text-primary"></i>Security</h2>
+          <p>We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction. All data is transmitted over secure connections (HTTPS) and stored in encrypted databases.</p>
+        </div>
+
+        <div class="privacy-card">
+          <h2><i class="bi bi-envelope-paper me-2 text-primary"></i>Contact Us</h2>
+          <p>If you have any questions about this privacy policy or wish to exercise your rights, please <a href="/contact">contact us</a>.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="privacy-footer">
+  <div class="container text-center">
+    <p class="mb-0">&copy; {{ currentYear }} EnquiryPro. All rights reserved.</p>
+  </div>
+</footer>

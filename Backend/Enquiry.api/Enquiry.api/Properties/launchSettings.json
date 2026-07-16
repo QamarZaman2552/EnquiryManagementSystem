@@ -5,9 +5,11 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "scalar/v1",
-      "applicationUrl": "https://127.0.0.1:7135;http://127.0.0.1:5135",
+      "applicationUrl": "https://127.0.0.1:7136;http://127.0.0.1:5135",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_KEY": "super-secret-key-that-is-at-least-32-characters-long-2026!",
+        "DB_CONNECTION_STRING": "Server=(localdb)\\MSSQLLocalDB;Database=EnquiryDb;Trusted_Connection=True;TrustServerCertificate=True"
       }
     },
     "https": {
@@ -15,9 +17,11 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "scalar/v1",
-      "applicationUrl": "https://127.0.0.1:7135;http://127.0.0.1:5135",
+      "applicationUrl": "https://127.0.0.1:7136;http://127.0.0.1:5135",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_KEY": "super-secret-key-that-is-at-least-32-characters-long-2026!",
+        "DB_CONNECTION_STRING": "Server=(localdb)\\MSSQLLocalDB;Database=EnquiryDb;Trusted_Connection=True;TrustServerCertificate=True"
       }
     }
   }

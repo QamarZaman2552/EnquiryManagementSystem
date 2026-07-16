@@ -1,0 +1,41 @@
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Admin navigation">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-name"><i class="bi bi-headset me-2"></i>Enquiry<span>Pro</span></div>
+    <div class="sidebar-subtitle">Admin Management Panel</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="/admin/dashboard" class="sidebar-link" [class.active]="activePage === 'dashboard'" aria-current="page">
+      <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <div class="nav-section-label mt-2">Management</div>
+    <a href="/admin/enquiries" class="sidebar-link" [class.active]="activePage === 'enquiries'">
+      <i class="bi bi-inbox"></i> All Enquiries
+    </a>
+    <a href="/admin/services" class="sidebar-link" [class.active]="activePage === 'services'">
+      <i class="bi bi-grid-1x2"></i> Services
+    </a>
+
+    <div class="nav-section-label mt-2">System</div>
+    <a href="javascript:void(0)" (click)="logout()" class="sidebar-link" aria-label="Log out">
+      <i class="bi bi-box-arrow-left"></i> Logout
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="admin-badge">
+      <div class="admin-avatar" role="img" aria-label="Admin avatar">{{ adminInitial }}</div>
+      <div>
+        <div class="admin-name">{{ adminUsername }}</div>
+        <div class="admin-role">System Administrator</div>
+      </div>
+    </div>
+    <div class="copyright">&copy; {{ currentYear }} EnquiryPro. All rights reserved.</div>
+  </div>
+</aside>
+
+<div class="main-content">
+  <ng-content></ng-content>
+</div>

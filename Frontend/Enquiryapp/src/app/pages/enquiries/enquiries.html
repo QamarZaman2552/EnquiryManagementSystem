@@ -1,34 +1,6 @@
-<!-- ═══ SIDEBAR ═══ -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-brand">
-    <div class="sidebar-brand-name"><i class="bi bi-headset me-2"></i>Enquiry<span>Pro</span></div>
-    <div class="sidebar-subtitle">Admin Management Panel</div>
-  </div>
+<app-admin-layout activePage="enquiries">
 
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Main</div>
-    <a href="/admin/dashboard" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
-
-    <div class="nav-section-label mt-2">Management</div>
-    <a href="/admin/enquiries" class="sidebar-link active"><i class="bi bi-inbox"></i> All Enquiries</a>
-    <a href="/admin/services" class="sidebar-link"><i class="bi bi-grid-1x2"></i> Services</a>
-
-    <div class="nav-section-label mt-2">System</div>
-    <a href="javascript:void(0)" (click)="logout()" class="sidebar-link"><i class="bi bi-box-arrow-left"></i> Logout</a>
-  </nav>
-
-  <div class="sidebar-footer">
-    <div class="admin-badge">
-      <div class="admin-avatar">{{ adminInitial }}</div>
-      <div>
-        <div class="admin-name">{{ adminUsername }}</div>
-        <div class="admin-role">System Administrator</div>
-      </div>
-    </div>
-  </div>
-</aside>
-
-<!-- ═══ MAIN CONTENT ═══ -->
+  <!-- ═══ MAIN CONTENT ═══ -->
 <div class="main-content">
 
   <!-- Top Header -->
@@ -103,7 +75,7 @@
             <option value="Closed">Closed</option>
           </select>
           <!-- Export CSV -->
-          <button class="btn btn-sm btn-success d-flex align-items-center gap-1" (click)="exportToCsv()" title="Export to CSV" id="exportCsvBtn">
+          <button class="btn btn-sm btn-success d-flex align-items-center gap-1" (click)="exportToCsv()" title="Export to CSV" id="exportCsvBtn" aria-label="Export to CSV">
             <i class="bi bi-download"></i> Export CSV
           </button>
           <span class="badge bg-primary rounded-pill ms-1">{{ filteredList.length }} records</span>
@@ -220,3 +192,5 @@
     </div>
   </div>
 </div>
+
+</app-admin-layout>
