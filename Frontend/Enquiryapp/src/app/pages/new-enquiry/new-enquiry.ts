@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
@@ -14,6 +14,7 @@ import { Service } from '../../models/interfaces';
 })
 export class NewEnquiry implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   currentYear = new Date().getFullYear();
 
@@ -43,8 +44,16 @@ export class NewEnquiry implements OnInit {
     this.isLoading = true;
     this.loadError = false;
     const sub = this.api.getServices().subscribe({
-      next: (data) => { this.servicesList = data; this.isLoading = false; },
-      error: () => { this.isLoading = false; this.loadError = true; }
+      next: (data) => {
+        this.servicesList = data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.loadError = true;
+        this.cdr.detectChanges();
+      }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
@@ -57,10 +66,12 @@ export class NewEnquiry implements OnInit {
         this.isSubmitting = false;
         this.toast.success('Enquiry submitted successfully! We will contact you shortly.');
         this.formData = { fullName: '', email: '', mobile: '', subject: '', message: '', serviceId: null };
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isSubmitting = false;
         this.toast.error('Failed to submit enquiry. Please try again.');
+        this.cdr.detectChanges();
       }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
@@ -15,6 +15,7 @@ import { Enquiry } from '../../models/interfaces';
 })
 export class Enquiries implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   enquiriesList: Enquiry[] = [];
   selectedEnquiry: Enquiry | null = null;
@@ -44,8 +45,16 @@ export class Enquiries implements OnInit {
   loadEnquiries() {
     this.isLoading = true;
     const sub = this.api.getEnquiries(1, 500).subscribe({
-      next: (response) => { this.enquiriesList = response.data; this.isLoading = false; },
-      error: () => { this.isLoading = false; this.toast.error('Failed to load enquiries.'); }
+      next: (response) => {
+        this.enquiriesList = response.data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toast.error('Failed to load enquiries.');
+        this.cdr.detectChanges();
+      }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
@@ -70,10 +79,12 @@ export class Enquiries implements OnInit {
       next: () => {
         enquiry.status = newStatus;
         this.toast.success(`Status updated to ${newStatus}`);
+        this.cdr.detectChanges();
       },
       error: () => {
         this.toast.error('Failed to update status.');
         select.value = enquiry.status || 'Pending';
+        this.cdr.detectChanges();
       }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
@@ -105,8 +116,15 @@ export class Enquiries implements OnInit {
   deleteEnquiry(id: number) {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
     const sub = this.api.deleteEnquiry(id).subscribe({
-      next: () => { this.toast.success('Enquiry deleted.'); this.loadEnquiries(); },
-      error: () => this.toast.error('Failed to delete enquiry.')
+      next: () => {
+        this.toast.success('Enquiry deleted.');
+        this.loadEnquiries();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toast.error('Failed to delete enquiry.');
+        this.cdr.detectChanges();
+      }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }

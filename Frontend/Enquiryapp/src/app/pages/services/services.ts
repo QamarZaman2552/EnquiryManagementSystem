@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
@@ -15,6 +15,7 @@ import { Service } from '../../models/interfaces';
 })
 export class Services implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   servicesList: Service[] = [];
   isLoading = false;
@@ -34,8 +35,16 @@ export class Services implements OnInit {
   loadService() {
     this.isLoading = true;
     const sub = this.api.getServices().subscribe({
-      next: (data) => { this.servicesList = data; this.isLoading = false; },
-      error: () => { this.isLoading = false; this.toast.error('Failed to load services.'); }
+      next: (data) => {
+        this.servicesList = data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toast.error('Failed to load services.');
+        this.cdr.detectChanges();
+      }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
@@ -48,8 +57,13 @@ export class Services implements OnInit {
         this.toast.success('Service added successfully!');
         this.loadService();
         this.newService = { serviceName: '', rate: 0, isActive: true };
+        this.cdr.detectChanges();
       },
-      error: () => { this.isSaving = false; this.toast.error('Failed to add service.'); }
+      error: () => {
+        this.isSaving = false;
+        this.toast.error('Failed to add service.');
+        this.cdr.detectChanges();
+      }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
@@ -65,8 +79,13 @@ export class Services implements OnInit {
         this.toast.success('Service updated successfully!');
         this.showEditModal = false;
         this.loadService();
+        this.cdr.detectChanges();
       },
-      error: () => { this.isSaving = false; this.toast.error('Failed to update service.'); }
+      error: () => {
+        this.isSaving = false;
+        this.toast.error('Failed to update service.');
+        this.cdr.detectChanges();
+      }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
@@ -74,8 +93,15 @@ export class Services implements OnInit {
   toggleStatus(s: Service) {
     const updated = { ...s, isActive: !s.isActive };
     const sub = this.api.updateService(s.serviceId, updated).subscribe({
-      next: () => { s.isActive = !s.isActive; this.toast.success(`Service ${s.isActive ? 'activated' : 'deactivated'}.`); },
-      error: () => this.toast.error('Failed to update status.')
+      next: () => {
+        s.isActive = !s.isActive;
+        this.toast.success(`Service ${s.isActive ? 'activated' : 'deactivated'}.`);
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toast.error('Failed to update status.');
+        this.cdr.detectChanges();
+      }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
@@ -83,8 +109,15 @@ export class Services implements OnInit {
   deleteService(id: number) {
     if (!confirm('Are you sure you want to delete this service?')) return;
     const sub = this.api.deleteService(id).subscribe({
-      next: () => { this.toast.success('Service deleted.'); this.loadService(); },
-      error: () => this.toast.error('Failed to delete service.')
+      next: () => {
+        this.toast.success('Service deleted.');
+        this.loadService();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toast.error('Failed to delete service.');
+        this.cdr.detectChanges();
+      }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }

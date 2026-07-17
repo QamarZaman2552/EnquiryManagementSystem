@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../services/toast.service';
@@ -14,6 +16,7 @@ import { Enquiry, Service } from '../../models/interfaces';
 })
 export class Dashboard implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   enquiriesList: Enquiry[] = [];
   servicesList: Service[] = [];
@@ -31,20 +34,26 @@ export class Dashboard implements OnInit {
 
   loadData(): void {
     this.isLoading = true;
-    let loaded = 0;
-    const checkDone = () => { loaded++; if (loaded === 2) this.isLoading = false; };
-
-    const sub1 = this.api.getEnquiries(1, 100).subscribe({
-      next: (response) => { this.enquiriesList = response.data; checkDone(); },
-      error: () => { this.toast.error('Failed to load enquiries.'); checkDone(); }
+    const sub = forkJoin({
+      enquiries: this.api.getEnquiries(1, 100),
+      services: this.api.getServices()
+    }).pipe(
+      finalize(() => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: ({ enquiries, services }) => {
+        this.enquiriesList = enquiries.data ?? [];
+        this.servicesList = services ?? [];
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toast.error('Failed to load dashboard data. Please refresh the page.');
+        this.cdr.detectChanges();
+      }
     });
-
-    const sub2 = this.api.getServices().subscribe({
-      next: (services) => { this.servicesList = services; checkDone(); },
-      error: () => { this.toast.error('Failed to load services.'); checkDone(); }
-    });
-
-    this.destroyRef.onDestroy(() => { sub1.unsubscribe(); sub2.unsubscribe(); });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   get totalEnquiries(): number { return this.enquiriesList.length; }

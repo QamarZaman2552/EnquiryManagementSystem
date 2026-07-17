@@ -156,7 +156,15 @@
                       </div>
                     </td>
                   </tr>
-                  <tr *ngIf="servicesList.length === 0">
+                  <!-- Loading row -->
+                  <tr *ngIf="isLoading">
+                    <td colspan="6" class="text-center py-4">
+                      <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                      <span class="text-muted">Loading services...</span>
+                    </td>
+                  </tr>
+                  <!-- Empty state row -->
+                  <tr *ngIf="!isLoading && servicesList.length === 0">
                     <td colspan="6" class="text-center py-4 text-muted">No services found.</td>
                   </tr>
                 </tbody>

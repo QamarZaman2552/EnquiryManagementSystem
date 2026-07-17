@@ -76,13 +76,8 @@ export class AuthService {
             this.me().subscribe({
                 next: () => resolve(),
                 error: () => {
-                    this.refreshToken().subscribe({
-                        next: () => resolve(),
-                        error: () => {
-                            this.clearSession();
-                            resolve();
-                        }
-                    });
+                    this.clearSession();
+                    resolve();
                 }
             });
         });
