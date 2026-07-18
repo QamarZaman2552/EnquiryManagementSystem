@@ -42,6 +42,16 @@ export interface EnquiryFormData {
   serviceId: number | null;
 }
 
+export interface ContactMessage {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  createdAt: string;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;

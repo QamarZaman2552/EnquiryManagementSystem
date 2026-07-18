@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
-import { Service, Enquiry, ContactFormData, PaginatedResponse } from '../models/interfaces';
+import { Service, Enquiry, ContactFormData, ContactMessage, PaginatedResponse } from '../models/interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -47,6 +47,10 @@ export class Api {
     // ── CONTACT ───────────────────────────────────────────────
     sendContactMessage(data: ContactFormData): Observable<{ message: string }> {
         return this.http.post<{ message: string }>(`${this.baseUrl}/Contact`, data);
+    }
+
+    getContactMessages(): Observable<ContactMessage[]> {
+        return this.http.get<ContactMessage[]>(`${this.baseUrl}/Contact`);
     }
 
     // ── GDPR DATA ─────────────────────────────────────────────

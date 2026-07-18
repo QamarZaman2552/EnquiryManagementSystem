@@ -6,7 +6,7 @@ import { Api } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../services/toast.service';
 import { AdminLayout } from '../admin-layout/admin-layout';
-import { Enquiry, Service } from '../../models/interfaces';
+import { Enquiry, Service, ContactMessage } from '../../models/interfaces';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,6 +20,7 @@ export class Dashboard implements OnInit {
 
   enquiriesList: Enquiry[] = [];
   servicesList: Service[] = [];
+  contactMessages: ContactMessage[] = [];
   isLoading = false;
 
   constructor(
@@ -36,16 +37,18 @@ export class Dashboard implements OnInit {
     this.isLoading = true;
     const sub = forkJoin({
       enquiries: this.api.getEnquiries(1, 100),
-      services: this.api.getServices()
+      services: this.api.getServices(),
+      contactMessages: this.api.getContactMessages()
     }).pipe(
       finalize(() => {
         this.isLoading = false;
         this.cdr.detectChanges();
       })
     ).subscribe({
-      next: ({ enquiries, services }) => {
+      next: ({ enquiries, services, contactMessages }) => {
         this.enquiriesList = enquiries.data ?? [];
         this.servicesList = services ?? [];
+        this.contactMessages = contactMessages ?? [];
         this.cdr.detectChanges();
       },
       error: () => {
