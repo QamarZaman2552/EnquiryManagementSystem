@@ -6,15 +6,15 @@
 
   <nav class="sidebar-nav">
     <div class="nav-section-label">Main</div>
-    <a href="/admin/dashboard" class="sidebar-link" [class.active]="activePage === 'dashboard'" aria-current="page">
+    <a routerLink="/admin/dashboard" class="sidebar-link" [class.active]="activePage === 'dashboard'" aria-current="page">
       <i class="bi bi-speedometer2"></i> Dashboard
     </a>
 
     <div class="nav-section-label mt-2">Management</div>
-    <a href="/admin/enquiries" class="sidebar-link" [class.active]="activePage === 'enquiries'">
+    <a routerLink="/admin/enquiries" class="sidebar-link" [class.active]="activePage === 'enquiries'">
       <i class="bi bi-inbox"></i> All Enquiries
     </a>
-    <a href="/admin/services" class="sidebar-link" [class.active]="activePage === 'services'">
+    <a routerLink="/admin/services" class="sidebar-link" [class.active]="activePage === 'services'">
       <i class="bi bi-grid-1x2"></i> Services
     </a>
 
