@@ -42,8 +42,9 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-login" id="loginBtn">
-          <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        <button type="submit" class="btn btn-login" id="loginBtn" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          <i *ngIf="!isLoading" class="bi bi-box-arrow-in-right me-2"></i>{{ isLoading ? 'Signing in...' : 'Sign In' }}
         </button>
       </form>
 
@@ -57,7 +58,7 @@
 
     <!-- Footer note -->
     <p class="text-center mt-3 login-footer-note">
-      &copy; 2025 Enquiry Management System. All rights reserved.
+      &copy; {{ currentYear }} Enquiry Management System. All rights reserved.
     </p>
   </div>
 </div>

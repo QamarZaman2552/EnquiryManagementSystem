@@ -15,6 +15,7 @@ export class LoginPage {
   password = '';
   loginError = false;
   isLoading = false;
+  currentYear = new Date().getFullYear();
 
   constructor(private router: Router, private auth: AuthService) { }
 
