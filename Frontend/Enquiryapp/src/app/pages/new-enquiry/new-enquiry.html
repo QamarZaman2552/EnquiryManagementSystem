@@ -190,8 +190,9 @@
                   <button type="button" class="btn btn-reset" (click)="enquiryForm.resetForm({serviceId: 0})" [disabled]="isAdmin">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
                   </button>
-                  <button type="submit" class="btn btn-submit" id="submitBtn" [disabled]="isAdmin">
-                    <i class="bi bi-send me-2"></i>Submit Enquiry
+                  <button type="submit" class="btn btn-submit" id="submitBtn" [disabled]="isAdmin || isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <i *ngIf="!isSubmitting" class="bi bi-send me-2"></i>{{ isSubmitting ? 'Submitting...' : 'Submit Enquiry' }}
                   </button>
                 </div>
 
