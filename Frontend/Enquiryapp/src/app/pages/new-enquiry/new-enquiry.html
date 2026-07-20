@@ -52,7 +52,10 @@
       <p class="section-subtitle">Click on a service to auto-select it in the enquiry form below</p>
       <div class="row g-3" id="servicesGrid">
         <div class="col-6 col-md-4 col-lg-2" *ngFor="let s of servicesList">
-          <div class="service-card" [class.selected]="formData.serviceId === s.serviceId" (click)="formData.serviceId = s.serviceId">
+          <div class="service-card" [class.selected]="formData.serviceId === s.serviceId"
+               (click)="formData.serviceId = s.serviceId"
+               (keydown.enter)="formData.serviceId = s.serviceId"
+               tabindex="0" role="button" [attr.aria-pressed]="formData.serviceId === s.serviceId">
             <div class="service-icon"><i class="bi bi-gear-fill"></i></div>
             <div class="service-name">{{ s.serviceName }}</div>
             <span class="service-rate">PKR {{ s.rate | number:'1.0-2' }}</span>
