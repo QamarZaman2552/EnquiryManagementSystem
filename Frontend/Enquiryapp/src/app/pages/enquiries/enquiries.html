@@ -64,10 +64,11 @@
               placeholder="Search name, email, phone..."
               [(ngModel)]="searchTerm"
               id="searchEnquiries"
+              aria-label="Search enquiries by name, email, or phone"
             />
           </div>
           <!-- Status Filter -->
-          <select class="form-select form-select-sm filter-select" [(ngModel)]="filterStatus" id="filterStatus">
+          <select class="form-select form-select-sm filter-select" [(ngModel)]="filterStatus" id="filterStatus" aria-label="Filter by status">
             <option value="">All Statuses</option>
             <option value="Pending">Pending</option>
             <option value="In Progress">In Progress</option>
