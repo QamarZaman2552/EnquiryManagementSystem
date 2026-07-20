@@ -190,7 +190,7 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-3 justify-content-end flex-wrap">
-                  <button type="button" class="btn btn-reset" (click)="enquiryForm.resetForm({serviceId: 0})" [disabled]="isAdmin">
+                  <button type="button" class="btn btn-reset" (click)="enquiryForm.resetForm({serviceId: null})" [disabled]="isAdmin">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
                   </button>
                   <button type="submit" class="btn btn-submit" id="submitBtn" [disabled]="isAdmin || isSubmitting">
