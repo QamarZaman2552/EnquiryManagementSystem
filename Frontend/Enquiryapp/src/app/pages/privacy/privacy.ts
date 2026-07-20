@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Api } from '../../services/api';
 import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-privacy',
@@ -17,7 +18,11 @@ export class Privacy {
   exportResult: any = null;
   isLoading = false;
 
-  constructor(private api: Api, private toast: ToastService) {}
+  constructor(private api: Api, private toast: ToastService, public auth: AuthService) {}
+
+  get isAdmin(): boolean {
+    return this.auth.isAdmin();
+  }
 
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
