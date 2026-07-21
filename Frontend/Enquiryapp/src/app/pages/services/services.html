@@ -132,7 +132,7 @@
                         <div class="service-name-cell">{{ s.serviceName }}</div>
                       </div>
                     </td>
-                    <td><strong>{{ s.rate }}</strong></td>
+                    <td><strong>{{ s.rate | number:'1.0-2' }}</strong></td>
                     <td>
                       <span [class]="s.isActive ? 'badge-active' : 'badge-inactive'">
                         {{ s.isActive ? 'Active' : 'Inactive' }}
