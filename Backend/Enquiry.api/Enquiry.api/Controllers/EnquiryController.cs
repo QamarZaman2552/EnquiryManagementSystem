@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Enquiry.api.Models;
+using Enquiry.api.EmailService;
+using Serilog;
 using System.ComponentModel.DataAnnotations;
 
 [Route("api/[controller]")]
@@ -9,10 +11,12 @@ using System.ComponentModel.DataAnnotations;
 public class EnquiryController : ControllerBase
 {
     private readonly EnquiryDbContext _context;
-    public EnquiryController(EnquiryDbContext context)
+    private readonly EmailService _email;
+    public EnquiryController(EnquiryDbContext context, EmailService email)
     {
         _context = context;
-     }
+        _email = email;
+    }
 
     // GET: api/EnquiryMaster  (Admin only - requires auth)
     [Authorize(Roles = "Admin")]
@@ -132,6 +136,28 @@ public class EnquiryController : ControllerBase
         {
             _context.EnquiryMasters.Add(enquirymaster);
             await _context.SaveChangesAsync();
+
+            try
+            {
+                await _email.SendAsync(
+                    toEmail: dto.email,
+                    subject: "Enquiry Received – EnquiryPro",
+                    body: $@"
+                        <h2>Thank You, {dto.fullName}!</h2>
+                        <p>We have received your enquiry and will get back to you shortly.</p>
+                        <table style='border-collapse:collapse;width:100%;max-width:500px;'>
+                            <tr><td style='padding:8px;border:1px solid #ddd;font-weight:bold;'>Subject</td><td style='padding:8px;border:1px solid #ddd;'>{dto.subject}</td></tr>
+                            <tr><td style='padding:8px;border:1px solid #ddd;font-weight:bold;'>Message</td><td style='padding:8px;border:1px solid #ddd;'>{dto.message}</td></tr>
+                            <tr><td style='padding:8px;border:1px solid #ddd;font-weight:bold;'>Status</td><td style='padding:8px;border:1px solid #ddd;'>Pending</td></tr>
+                        </table>
+                        <p style='margin-top:20px;font-size:0.85em;color:#666;'>This is an automated confirmation. Please do not reply to this email.</p>"
+                );
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to send confirmation email to {Email}", dto.email);
+            }
+
             return Ok(enquirymaster);
         }
         catch (DbUpdateException ex)

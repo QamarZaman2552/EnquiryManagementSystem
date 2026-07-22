@@ -1,4 +1,5 @@
 using Enquiry.api.Models;
+using Enquiry.api.EmailService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+// ── Email ──
+builder.Services.AddScoped<EmailService>();
 
 // ── Database ──
 builder.Services.AddDbContext<EnquiryDbContext>(options =>
