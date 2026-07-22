@@ -141,16 +141,58 @@ public class EnquiryController : ControllerBase
             {
                 await _email.SendAsync(
                     toEmail: dto.email,
-                    subject: "Enquiry Received – EnquiryPro",
+                    subject: "We've Received Your Enquiry – EnquiryPro",
                     body: $@"
-                        <h2>Thank You, {dto.fullName}!</h2>
-                        <p>We have received your enquiry and will get back to you shortly.</p>
-                        <table style='border-collapse:collapse;width:100%;max-width:500px;'>
-                            <tr><td style='padding:8px;border:1px solid #ddd;font-weight:bold;'>Subject</td><td style='padding:8px;border:1px solid #ddd;'>{dto.subject}</td></tr>
-                            <tr><td style='padding:8px;border:1px solid #ddd;font-weight:bold;'>Message</td><td style='padding:8px;border:1px solid #ddd;'>{dto.message}</td></tr>
-                            <tr><td style='padding:8px;border:1px solid #ddd;font-weight:bold;'>Status</td><td style='padding:8px;border:1px solid #ddd;'>Pending</td></tr>
-                        </table>
-                        <p style='margin-top:20px;font-size:0.85em;color:#666;'>This is an automated confirmation. Please do not reply to this email.</p>"
+<!DOCTYPE html>
+<html>
+<head><meta charset='UTF-8'></head>
+<body style='margin:0;padding:0;background:#f4f7fb;font-family:Segoe UI,Arial,sans-serif;'>
+  <table width='100%' cellpadding='0' cellspacing='0'>
+    <tr><td align='center' style='padding:40px 16px;'>
+      <table width='560' cellpadding='0' cellspacing='0' style='background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);'>
+        <!-- Header -->
+        <tr>
+          <td style='background:linear-gradient(135deg,#2563eb,#06b6d4);padding:36px 32px;text-align:center;'>
+            <div style='font-size:48px;margin-bottom:8px;'>&#128222;</div>
+            <h1 style='color:#fff;margin:0;font-size:24px;font-weight:700;'>Thank You, {dto.fullName}!</h1>
+            <p style='color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:15px;'>Your enquiry has been received successfully.</p>
+          </td>
+        </tr>
+        <!-- Body -->
+        <tr><td style='padding:32px;'>
+          <p style='color:#334155;font-size:15px;line-height:1.6;margin:0 0 20px;'>
+            We've received your request and our team will review it shortly. Here's a summary of what you submitted:
+          </p>
+          <table width='100%' cellpadding='0' cellspacing='0' style='background:#f8fafc;border-radius:12px;overflow:hidden;'>
+            <tr><td style='padding:16px 20px;border-bottom:1px solid #e2e8f0;'>
+              <span style='color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;'>Subject</span>
+              <div style='color:#0f172a;font-size:15px;font-weight:600;margin-top:2px;'>{dto.subject}</div>
+            </td></tr>
+            <tr><td style='padding:16px 20px;border-bottom:1px solid #e2e8f0;'>
+              <span style='color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;'>Message</span>
+              <div style='color:#334155;font-size:14px;margin-top:2px;line-height:1.5;'>{dto.message}</div>
+            </td></tr>
+            <tr><td style='padding:16px 20px;'>
+              <span style='color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;'>Status</span>
+              <div><span style='display:inline-block;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:600;background:#fef3c7;color:#92400e;margin-top:2px;'>Pending Review</span></div>
+            </td></tr>
+          </table>
+          <p style='color:#64748b;font-size:14px;line-height:1.6;margin:24px 0 0;padding:16px;background:#eff6ff;border-radius:10px;'>
+            <strong style='color:#2563eb;'>&#128161; What happens next?</strong><br/>
+            Our team will review your enquiry and contact you at <strong>{dto.email}</strong> within <strong>24 hours</strong>.
+          </p>
+        </td></tr>
+        <!-- Footer -->
+        <tr>
+          <td style='padding:24px 32px;background:#f8fafc;text-align:center;border-top:1px solid #e2e8f0;'>
+            <p style='color:#94a3b8;font-size:12px;margin:0;'>This is an automated message from <strong>EnquiryPro</strong>. Please do not reply to this email.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"
                 );
             }
             catch (Exception ex)
