@@ -14,13 +14,24 @@ public class EmailService
 
     public EmailService(IConfiguration config)
     {
-        var section = config.GetSection("Smtp");
-        _smtpHost = section["Host"] ?? throw new InvalidOperationException("SMTP Host not configured.");
-        _smtpPort = int.Parse(section["Port"] ?? "587");
-        _smtpUser = section["User"] ?? "";
-        _smtpPass = section["Pass"] ?? "";
-        _fromEmail = section["FromEmail"] ?? _smtpUser;
-        _fromName = section["FromName"] ?? "EnquiryPro";
+        _smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST")
+            ?? config["Smtp:Host"]
+            ?? throw new InvalidOperationException("SMTP Host not configured. Set SMTP_HOST env var or Smtp:Host in appsettings.");
+        _smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT")
+            ?? config["Smtp:Port"]
+            ?? "587");
+        _smtpUser = Environment.GetEnvironmentVariable("SMTP_USER")
+            ?? config["Smtp:User"]
+            ?? "";
+        _smtpPass = Environment.GetEnvironmentVariable("SMTP_PASS")
+            ?? config["Smtp:Pass"]
+            ?? "";
+        _fromEmail = Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL")
+            ?? config["Smtp:FromEmail"]
+            ?? _smtpUser;
+        _fromName = Environment.GetEnvironmentVariable("SMTP_FROM_NAME")
+            ?? config["Smtp:FromName"]
+            ?? "EnquiryPro";
     }
 
     public async Task SendAsync(string toEmail, string subject, string body)

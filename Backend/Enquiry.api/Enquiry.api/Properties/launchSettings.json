@@ -9,7 +9,12 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JWT_KEY": "super-secret-key-that-is-at-least-32-characters-long-2026!",
-        "DB_CONNECTION_STRING": "Server=(localdb)\\MSSQLLocalDB;Database=EnquiryDb;Trusted_Connection=True;TrustServerCertificate=True"
+        "DB_CONNECTION_STRING": "Server=(localdb)\\MSSQLLocalDB;Database=EnquiryDb;Trusted_Connection=True;TrustServerCertificate=True",
+        "SMTP_HOST": "smtp.gmail.com",
+        "SMTP_PORT": "587",
+        "SMTP_USER": "",
+        "SMTP_PASS": "",
+        "SMTP_FROM_NAME": "EnquiryPro"
       }
     },
     "https": {
@@ -21,7 +26,12 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JWT_KEY": "super-secret-key-that-is-at-least-32-characters-long-2026!",
-        "DB_CONNECTION_STRING": "Server=(localdb)\\MSSQLLocalDB;Database=EnquiryDb;Trusted_Connection=True;TrustServerCertificate=True"
+        "DB_CONNECTION_STRING": "Server=(localdb)\\MSSQLLocalDB;Database=EnquiryDb;Trusted_Connection=True;TrustServerCertificate=True",
+        "SMTP_HOST": "smtp.gmail.com",
+        "SMTP_PORT": "587",
+        "SMTP_USER": "",
+        "SMTP_PASS": "",
+        "SMTP_FROM_NAME": "EnquiryPro"
       }
     }
   }
