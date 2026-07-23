@@ -165,7 +165,10 @@
                   </tr>
                   <!-- Empty state row -->
                   <tr *ngIf="!isLoading && servicesList.length === 0">
-                    <td colspan="6" class="text-center py-4 text-muted">No services found.</td>
+                    <td colspan="6" class="text-center py-5">
+                      <i class="bi bi-grid-1x2 fs-1 text-muted d-block mb-2"></i>
+                      <span class="text-muted fw-500">No services created yet. Add your first service using the form.</span>
+                    </td>
                   </tr>
                 </tbody>
               </table>

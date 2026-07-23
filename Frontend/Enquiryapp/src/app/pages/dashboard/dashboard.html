@@ -219,7 +219,10 @@
                     <td>{{ msg.createdAt | date:'yyyy-MM-dd' }}</td>
                   </tr>
                   <tr *ngIf="contactMessages.length === 0">
-                    <td colspan="4" class="text-center py-4 text-muted">No contact messages yet.</td>
+                    <td colspan="4" class="text-center py-4 text-muted">
+                      <i class="bi bi-envelope fs-1 text-muted d-block mb-2"></i>
+                      <span class="fw-500">No contact messages yet. Messages from the contact form will appear here.</span>
+                    </td>
                   </tr>
                 </tbody>
               </table>

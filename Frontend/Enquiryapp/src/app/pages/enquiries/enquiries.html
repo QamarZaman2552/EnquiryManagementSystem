@@ -123,8 +123,8 @@
             </tr>
             <tr *ngIf="filteredList.length === 0">
               <td colspan="8" class="text-center py-5">
-                <i class="bi bi-inbox fs-2 text-muted d-block mb-2"></i>
-                <span class="text-muted">No enquiries match your search.</span>
+                <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+                <span class="text-muted fw-500">{{ searchTerm || filterStatus ? 'No enquiries match your search or filter.' : 'No enquiries yet. Customers will appear here once they submit enquiries.' }}</span>
               </td>
             </tr>
           </tbody>
