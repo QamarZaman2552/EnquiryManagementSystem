@@ -24,7 +24,7 @@
       <div class="row g-3 mb-4">
         <!-- Total Enquiries -->
         <div class="col-6 col-md-4 col-xl-2">
-          <div class="stat-card">
+          <div class="stat-card" aria-label="Total enquiries: {{ totalEnquiries }}">
             <div class="stat-icon stat-icon-blue">
               <i class="bi bi-inbox-fill"></i>
             </div>
@@ -37,7 +37,7 @@
 
         <!-- Pending -->
         <div class="col-6 col-md-4 col-xl-2">
-          <div class="stat-card">
+          <div class="stat-card" aria-label="Pending enquiries: {{ pendingCount }}">
             <div class="stat-icon stat-icon-orange">
               <i class="bi bi-hourglass-split"></i>
             </div>
@@ -50,7 +50,7 @@
 
         <!-- In Progress -->
         <div class="col-6 col-md-4 col-xl-2">
-          <div class="stat-card">
+          <div class="stat-card" aria-label="In progress enquiries: {{ inProgressCount }}">
             <div class="stat-icon stat-icon-cyan">
               <i class="bi bi-gear-wide-connected"></i>
             </div>
@@ -63,7 +63,7 @@
 
         <!-- Resolved -->
         <div class="col-6 col-md-4 col-xl-2">
-          <div class="stat-card">
+          <div class="stat-card" aria-label="Resolved enquiries: {{ resolvedCount }}">
             <div class="stat-icon stat-icon-green">
               <i class="bi bi-check-circle"></i>
             </div>
@@ -76,7 +76,7 @@
 
         <!-- Closed -->
         <div class="col-6 col-md-4 col-xl-2">
-          <div class="stat-card">
+          <div class="stat-card" aria-label="Closed enquiries: {{ closedCount }}">
             <div class="stat-icon stat-icon-gray">
               <i class="bi bi-archive"></i>
             </div>
@@ -89,7 +89,7 @@
 
         <!-- Total Services -->
         <div class="col-6 col-md-4 col-xl-2">
-          <div class="stat-card">
+          <div class="stat-card" aria-label="Total services: {{ totalServices }}">
             <div class="stat-icon stat-icon-purple">
               <i class="bi bi-grid-1x2-fill"></i>
             </div>
