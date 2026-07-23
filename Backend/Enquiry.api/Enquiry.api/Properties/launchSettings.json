@@ -12,8 +12,8 @@
         "DB_CONNECTION_STRING": "Server=(localdb)\\MSSQLLocalDB;Database=EnquiryDb;Trusted_Connection=True;TrustServerCertificate=True",
         "SMTP_HOST": "smtp.gmail.com",
         "SMTP_PORT": "587",
-        "SMTP_USER": "",
-        "SMTP_PASS": "",
+        "SMTP_USER": "EnquiryPro",
+        "SMTP_PASS": "vznm zpzy xclt ornp",
         "SMTP_FROM_NAME": "EnquiryPro"
       }
     },

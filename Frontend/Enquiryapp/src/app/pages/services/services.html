@@ -141,16 +141,16 @@
                     <td><span class="text-muted small">{{ s.createdate | date:'yyyy-MM-dd' }}</span></td>
                     <td class="text-center">
                       <div class="d-flex align-items-center justify-content-center gap-2">
-                        <button class="btn-action btn-edit" title="Edit" (click)="openEditModal(s)">
+                        <button class="btn-action btn-edit" title="Edit" (click)="openEditModal(s)" aria-label="Edit service {{ s.serviceName }}">
                           <i class="bi bi-pencil-fill"></i>
                         </button>
                         <button class="btn-action" [title]="s.isActive ? 'Set Inactive' : 'Set Active'"
                           [class.btn-toggle-active]="s.isActive"
                           [class.btn-toggle-inactive]="!s.isActive"
-                          (click)="toggleStatus(s)">
+                          (click)="toggleStatus(s)" [attr.aria-label]="(s.isActive ? 'Deactivate' : 'Activate') + ' service ' + s.serviceName">
                           <i [class]="s.isActive ? 'bi bi-toggle-on' : 'bi bi-toggle-off'"></i>
                         </button>
-                        <button class="btn-action btn-delete" title="Delete" (click)="deleteService(s.serviceId)">
+                        <button class="btn-action btn-delete" title="Delete" (click)="deleteService(s.serviceId)" aria-label="Delete service {{ s.serviceName }}">
                           <i class="bi bi-trash-fill"></i>
                         </button>
                       </div>

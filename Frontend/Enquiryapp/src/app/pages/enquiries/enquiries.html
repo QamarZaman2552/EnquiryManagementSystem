@@ -113,10 +113,10 @@
               </td>
               <td>{{ e.createdate | date:'yyyy-MM-dd' }}</td>
               <td class="text-center">
-                <button class="btn-action btn-view" (click)="viewEnquiry(e)" title="View Details">
+                <button class="btn-action btn-view" (click)="viewEnquiry(e)" title="View Details" aria-label="View enquiry details for {{ e.fullName }}">
                   <i class="bi bi-eye-fill"></i>
                 </button>
-                <button class="btn-action btn-delete" (click)="deleteEnquiry(e.id)" title="Delete">
+                <button class="btn-action btn-delete" (click)="deleteEnquiry(e.id)" title="Delete" aria-label="Delete enquiry {{ e.subject }}">
                   <i class="bi bi-trash-fill"></i>
                 </button>
               </td>
