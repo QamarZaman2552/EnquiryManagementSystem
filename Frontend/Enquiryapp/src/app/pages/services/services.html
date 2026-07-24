@@ -147,11 +147,14 @@
                         <button class="btn-action" [title]="s.isActive ? 'Set Inactive' : 'Set Active'"
                           [class.btn-toggle-active]="s.isActive"
                           [class.btn-toggle-inactive]="!s.isActive"
-                          (click)="toggleStatus(s)" [attr.aria-label]="(s.isActive ? 'Deactivate' : 'Activate') + ' service ' + s.serviceName">
-                          <i [class]="s.isActive ? 'bi bi-toggle-on' : 'bi bi-toggle-off'"></i>
+                          (click)="toggleStatus(s)" [attr.aria-label]="(s.isActive ? 'Deactivate' : 'Activate') + ' service ' + s.serviceName"
+                          [disabled]="togglingId === s.serviceId">
+                          <span *ngIf="togglingId === s.serviceId" class="spinner-border spinner-border-sm" role="status"></span>
+                          <i *ngIf="togglingId !== s.serviceId" [class]="s.isActive ? 'bi bi-toggle-on' : 'bi bi-toggle-off'"></i>
                         </button>
-                        <button class="btn-action btn-delete" title="Delete" (click)="deleteService(s.serviceId)" aria-label="Delete service {{ s.serviceName }}">
-                          <i class="bi bi-trash-fill"></i>
+                        <button class="btn-action btn-delete" title="Delete" (click)="deleteService(s.serviceId)" aria-label="Delete service {{ s.serviceName }}" [disabled]="deletingId === s.serviceId">
+                          <span *ngIf="deletingId === s.serviceId" class="spinner-border spinner-border-sm" role="status"></span>
+                          <i *ngIf="deletingId !== s.serviceId" class="bi bi-trash-fill"></i>
                         </button>
                       </div>
                     </td>

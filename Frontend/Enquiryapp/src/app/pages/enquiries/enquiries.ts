@@ -22,6 +22,7 @@ export class Enquiries implements OnInit {
   isLoading = false;
   searchTerm = '';
   filterStatus = '';
+  deletingId: number | null = null;
 
   get filteredList(): Enquiry[] {
     return this.enquiriesList.filter(e => {
@@ -115,13 +116,16 @@ export class Enquiries implements OnInit {
 
   deleteEnquiry(id: number) {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
+    this.deletingId = id;
     const sub = this.api.deleteEnquiry(id).subscribe({
       next: () => {
+        this.deletingId = null;
         this.toast.success('Enquiry deleted.');
         this.loadEnquiries();
         this.cdr.detectChanges();
       },
       error: () => {
+        this.deletingId = null;
         this.toast.error('Failed to delete enquiry.');
         this.cdr.detectChanges();
       }

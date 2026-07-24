@@ -116,8 +116,9 @@
                 <button class="btn-action btn-view" (click)="viewEnquiry(e)" title="View Details" aria-label="View enquiry details for {{ e.fullName }}">
                   <i class="bi bi-eye-fill"></i>
                 </button>
-                <button class="btn-action btn-delete" (click)="deleteEnquiry(e.id)" title="Delete" aria-label="Delete enquiry {{ e.subject }}">
-                  <i class="bi bi-trash-fill"></i>
+                <button class="btn-action btn-delete" (click)="deleteEnquiry(e.id)" title="Delete" aria-label="Delete enquiry {{ e.subject }}" [disabled]="deletingId === e.id">
+                  <span *ngIf="deletingId === e.id" class="spinner-border spinner-border-sm" role="status"></span>
+                  <i *ngIf="deletingId !== e.id" class="bi bi-trash-fill"></i>
                 </button>
               </td>
             </tr>

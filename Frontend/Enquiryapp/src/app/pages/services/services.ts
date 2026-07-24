@@ -20,6 +20,8 @@ export class Services implements OnInit {
   servicesList: Service[] = [];
   isLoading = false;
   isSaving = false;
+  deletingId: number | null = null;
+  togglingId: number | null = null;
 
   newService = { serviceName: '', rate: 0, isActive: true };
   showEditModal = false;
@@ -91,14 +93,17 @@ export class Services implements OnInit {
   }
 
   toggleStatus(s: Service) {
+    this.togglingId = s.serviceId;
     const updated = { ...s, isActive: !s.isActive };
     const sub = this.api.updateService(s.serviceId, updated).subscribe({
       next: () => {
+        this.togglingId = null;
         s.isActive = !s.isActive;
         this.toast.success(`Service ${s.isActive ? 'activated' : 'deactivated'}.`);
         this.cdr.detectChanges();
       },
       error: () => {
+        this.togglingId = null;
         this.toast.error('Failed to update status.');
         this.cdr.detectChanges();
       }
@@ -108,13 +113,16 @@ export class Services implements OnInit {
 
   deleteService(id: number) {
     if (!confirm('Are you sure you want to delete this service?')) return;
+    this.deletingId = id;
     const sub = this.api.deleteService(id).subscribe({
       next: () => {
+        this.deletingId = null;
         this.toast.success('Service deleted.');
         this.loadService();
         this.cdr.detectChanges();
       },
       error: () => {
+        this.deletingId = null;
         this.toast.error('Failed to delete service.');
         this.cdr.detectChanges();
       }
