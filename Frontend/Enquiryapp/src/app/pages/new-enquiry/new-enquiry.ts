@@ -22,6 +22,7 @@ export class NewEnquiry implements OnInit {
   isLoading = false;
   loadError = false;
   isSubmitting = false;
+  submitted = false;
 
   formData = {
     fullName: '',
@@ -64,8 +65,9 @@ export class NewEnquiry implements OnInit {
     const sub = this.api.addNewEnquiry(this.formData).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.toast.success('Enquiry submitted successfully! We will contact you shortly.');
+        this.submitted = true;
         this.formData = { fullName: '', email: '', mobile: '', subject: '', message: '', serviceId: null };
+        this.scrollToTop();
         this.cdr.detectChanges();
       },
       error: () => {

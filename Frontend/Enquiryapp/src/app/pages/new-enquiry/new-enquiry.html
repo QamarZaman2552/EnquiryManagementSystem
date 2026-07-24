@@ -95,6 +95,16 @@
                   <a href="/admin/enquiries" class="alert-link ms-2">Go to Admin Panel &rsaquo;</a>
                 </div>
 
+                <!-- Success banner -->
+                <div *ngIf="submitted" class="alert alert-success border-0 rounded-3 mb-4 d-flex align-items-center">
+                  <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                  <div>
+                    <strong>Thank you!</strong> Your enquiry has been submitted successfully. We will contact you at <strong>{{ formData.email }}</strong> within 24 hours.
+                    <a href="/enquiry" class="alert-link ms-2">Submit another enquiry &rsaquo;</a>
+                  </div>
+                </div>
+
+                <div *ngIf="!submitted">
                 <div class="row g-3 mb-3">
                   <!-- Full Name -->
                   <div class="col-md-6">
@@ -197,6 +207,8 @@
                     <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
                     <i *ngIf="!isSubmitting" class="bi bi-send me-2"></i>{{ isSubmitting ? 'Submitting...' : 'Submit Enquiry' }}
                   </button>
+                </div>
+
                 </div>
 
               </form>
