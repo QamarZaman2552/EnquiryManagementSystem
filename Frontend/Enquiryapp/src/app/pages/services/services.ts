@@ -20,6 +20,7 @@ export class Services implements OnInit {
   servicesList: Service[] = [];
   isLoading = false;
   isSaving = false;
+  isUpdating = false;
   deletingId: number | null = null;
   togglingId: number | null = null;
 
@@ -74,17 +75,17 @@ export class Services implements OnInit {
   closeEditModal()        { this.showEditModal = false; }
 
   updateService() {
-    this.isSaving = true;
+    this.isUpdating = true;
     const sub = this.api.updateService(this.editService.serviceId, this.editService).subscribe({
       next: () => {
-        this.isSaving = false;
+        this.isUpdating = false;
         this.toast.success('Service updated successfully!');
         this.showEditModal = false;
         this.loadService();
         this.cdr.detectChanges();
       },
       error: () => {
-        this.isSaving = false;
+        this.isUpdating = false;
         this.toast.error('Failed to update service.');
         this.cdr.detectChanges();
       }
